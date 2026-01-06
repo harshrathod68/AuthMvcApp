@@ -1,0 +1,535 @@
+@model AuthMvcApp.Models.TimeZoneConversionModel
+@using AuthMvcApp.Models
+@{
+    ViewData["Title"] = "Time Conversion";
+    var result = ViewBag.Result as TimeZoneResultModel;
+    var timeZones = SupportedTimeZones.TimeZones;
+}
+
+<div class="timezone-container">
+    <!-- Header Section -->
+    <div class="timezone-header text-center">
+        <h2>🕐 Time Zone Converter</h2>
+        <p class="text-muted">Convert time between different time zones around the world</p>
+    </div>
+
+    <!-- Conversion Card -->
+    <div class="card conversion-card">
+        <div class="card-body">
+            <form asp-action="TimeZone" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">
+                        <span>⚠️</span> @ViewBag.Error
+                    </div>
+                }
+
+                <!-- Date and Time Input Row -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Date" class="form-label">📅 Date</label>
+                        <input asp-for="Date" type="date" class="form-control datetime-input" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Time" class="form-label">⏰ Time</label>
+                        <input asp-for="Time" type="time" class="form-control datetime-input" />
+                        <span asp-validation-for="Time" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Timezone Selection Row -->
+                <div class="row g-3 align-items-end">
+                    <!-- From Timezone -->
+                    <div class="col-md-5">
+                        <label asp-for="FromTimeZone" class="form-label">From Timezone</label>
+                        <select asp-for="FromTimeZone" class="form-select timezone-select">
+                            @foreach (var tz in timeZones)
+                            {
+                                <option value="@tz.Key">
+                                    @tz.Value.Flag @tz.Value.Location (@tz.Value.Abbreviation) @tz.Value.Offset
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Swap Button -->
+                    <div class="col-md-2 text-center">
+                        <button type="button" class="btn btn-swap" onclick="swapTimeZones()">
+                            🔄
+                        </button>
+                    </div>
+
+                    <!-- To Timezone -->
+                    <div class="col-md-5">
+                        <label asp-for="ToTimeZone" class="form-label">To Timezone</label>
+                        <select asp-for="ToTimeZone" class="form-select timezone-select">
+                            @foreach (var tz in timeZones)
+                            {
+                                <option value="@tz.Key">
+                                    @tz.Value.Flag @tz.Value.Location (@tz.Value.Abbreviation) @tz.Value.Offset
+                                </option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Convert Button -->
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-convert">
+                        Convert Time
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Result Card -->
+    @if (result != null)
+    {
+        var fromInfo = timeZones.GetValueOrDefault(Model.FromTimeZone);
+        var toInfo = timeZones.GetValueOrDefault(Model.ToTimeZone);
+        var diffHours = result.TimeDifference.TotalHours;
+        var diffText = diffHours >= 0 ? $"+{diffHours:0.#} hours" : $"{diffHours:0.#} hours";
+        
+        <div class="card result-card mt-4">
+            <div class="card-body">
+                <div class="result-header text-center">
+                    <span class="result-label">Conversion Result</span>
+                </div>
+                
+                <div class="result-main">
+                    <!-- From Time -->
+                    <div class="result-time-box from-box">
+                        <span class="result-flag">@(fromInfo?.Flag ?? "🌍")</span>
+                        <span class="result-location">@result.FromTimeZoneName</span>
+                        <span class="result-time">@result.OriginalDateTime.ToString("hh:mm tt")</span>
+                        <span class="result-date">@result.OriginalDateTime.ToString("ddd, MMM dd, yyyy")</span>
+                        <span class="result-abbr">@result.FromAbbreviation</span>
+                    </div>
+                    
+                    <!-- Arrow -->
+                    <div class="result-arrow-container">
+                        <div class="result-arrow">→</div>
+                        <div class="time-diff">@diffText</div>
+                    </div>
+                    
+                    <!-- To Time -->
+                    <div class="result-time-box to-box">
+                        <span class="result-flag">@(toInfo?.Flag ?? "🌍")</span>
+                        <span class="result-location">@result.ToTimeZoneName</span>
+                        <span class="result-time converted">@result.ConvertedDateTime.ToString("hh:mm tt")</span>
+                        <span class="result-date">@result.ConvertedDateTime.ToString("ddd, MMM dd, yyyy")</span>
+                        <span class="result-abbr">@result.ToAbbreviation</span>
+                    </div>
+                </div>
+
+                <!-- Day Change Notice -->
+                @if (result.OriginalDateTime.Date != result.ConvertedDateTime.Date)
+                {
+                    <div class="day-change-notice">
+                        @if (result.ConvertedDateTime.Date > result.OriginalDateTime.Date)
+                        {
+                            <span>📅 Next Day</span>
+                        }
+                        else
+                        {
+                            <span>📅 Previous Day</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Quick Conversions -->
+    <div class="quick-section mt-4">
+        <h6 class="text-center text-muted mb-3">Popular Time Zone Pairs</h6>
+        <div class="row g-2">
+            <div class="col-6 col-md-3">
+                <button type="button" class="btn btn-quick" onclick="setTimeZones('India Standard Time', 'Eastern Standard Time')">
+                    🇮🇳 IST → 🇺🇸 EST
+                </button>
+            </div>
+            <div class="col-6 col-md-3">
+                <button type="button" class="btn btn-quick" onclick="setTimeZones('India Standard Time', 'GMT Standard Time')">
+                    🇮🇳 IST → 🇬🇧 GMT
+                </button>
+            </div>
+            <div class="col-6 col-md-3">
+                <button type="button" class="btn btn-quick" onclick="setTimeZones('Pacific Standard Time', 'India Standard Time')">
+                    🇺🇸 PST → 🇮🇳 IST
+                </button>
+            </div>
+            <div class="col-6 col-md-3">
+                <button type="button" class="btn btn-quick" onclick="setTimeZones('GMT Standard Time', 'Tokyo Standard Time')">
+                    🇬🇧 GMT → 🇯🇵 JST
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Time in Different Zones -->
+    <div class="world-clock mt-4">
+        <h6 class="text-center text-muted mb-3">Current Time Around the World</h6>
+        <div class="row g-2" id="worldClocks">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Function to swap From and To timezones
+        function swapTimeZones() {
+            var fromSelect = document.getElementById('FromTimeZone');
+            var toSelect = document.getElementById('ToTimeZone');
+            
+            var temp = fromSelect.value;
+            fromSelect.value = toSelect.value;
+            toSelect.value = temp;
+        }
+
+        // Function to set quick timezone pairs
+        function setTimeZones(from, to) {
+            document.getElementById('FromTimeZone').value = from;
+            document.getElementById('ToTimeZone').value = to;
+        }
+
+        // Function to set current time
+        function setCurrentTime() {
+            var now = new Date();
+            document.getElementById('Time').value = now.toTimeString().slice(0, 5);
+            document.getElementById('Date').value = now.toISOString().slice(0, 10);
+        }
+
+        // World clock data
+        var worldClockZones = [
+            { name: 'India', flag: '🇮🇳', offset: 5.5 },
+            { name: 'London', flag: '🇬🇧', offset: 0 },
+            { name: 'New York', flag: '🇺🇸', offset: -5 },
+            { name: 'Tokyo', flag: '🇯🇵', offset: 9 }
+        ];
+
+        // Update world clocks
+        function updateWorldClocks() {
+            var container = document.getElementById('worldClocks');
+            var utcNow = new Date();
+            
+            var html = '';
+            worldClockZones.forEach(function(zone) {
+                var localTime = new Date(utcNow.getTime() + (zone.offset * 60 * 60 * 1000) + (utcNow.getTimezoneOffset() * 60 * 1000));
+                var timeStr = localTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                
+                html += `
+                    <div class="col-6 col-md-3">
+                        <div class="world-clock-item">
+                            <span class="wc-flag">${zone.flag}</span>
+                            <span class="wc-name">${zone.name}</span>
+                            <span class="wc-time">${timeStr}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateWorldClocks();
+            setInterval(updateWorldClocks, 60000); // Update every minute
+        });
+    </script>
+}
+
+<style>
+    .timezone-container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    .timezone-header {
+        margin-bottom: 30px;
+    }
+
+    .timezone-header h2 {
+        font-weight: 700;
+        color: #333;
+    }
+
+    .conversion-card {
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .conversion-card .card-body {
+        padding: 40px;
+    }
+
+    .datetime-input {
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        border-radius: 15px;
+        border: 2px solid #e8e8e8;
+    }
+
+    .datetime-input:focus {
+        border-color: #f5af19;
+        box-shadow: 0 0 0 3px rgba(245, 175, 25, 0.15);
+    }
+
+    .timezone-select {
+        padding: 15px 20px;
+        font-size: 0.95rem;
+        border-radius: 15px;
+        border: 2px solid #e8e8e8;
+        cursor: pointer;
+    }
+
+    .timezone-select:focus {
+        border-color: #f5af19;
+        box-shadow: 0 0 0 3px rgba(245, 175, 25, 0.15);
+    }
+
+    .btn-swap {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        font-size: 1.3rem;
+        color: white;
+        transition: all 0.3s ease;
+        margin-bottom: 5px;
+    }
+
+    .btn-swap:hover {
+        transform: rotate(180deg);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-convert {
+        background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+        border: none;
+        padding: 18px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 15px;
+        color: white;
+    }
+
+    .btn-convert:hover {
+        background: linear-gradient(135deg, #e09f15 0%, #d9220f 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(245, 175, 25, 0.3);
+    }
+
+    /* Result Card Styles */
+    .result-card {
+        border: none;
+        border-radius: 25px;
+        background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+        color: white;
+    }
+
+    .result-card .card-body {
+        padding: 35px;
+    }
+
+    .result-header {
+        margin-bottom: 25px;
+    }
+
+    .result-label {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .result-main {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .result-time-box {
+        text-align: center;
+        flex: 1;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        padding: 25px 15px;
+    }
+
+    .result-flag {
+        font-size: 2.5rem;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .result-location {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .result-time {
+        font-size: 2rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .result-time.converted {
+        font-size: 2.3rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .result-date {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .result-abbr {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+    }
+
+    .result-arrow-container {
+        text-align: center;
+        padding: 0 10px;
+    }
+
+    .result-arrow {
+        font-size: 2rem;
+        opacity: 0.8;
+    }
+
+    .time-diff {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        margin-top: 5px;
+    }
+
+    .day-change-notice {
+        text-align: center;
+        margin-top: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    /* Quick Section */
+    .btn-quick {
+        width: 100%;
+        background: white;
+        border: 2px solid #e8e8e8;
+        border-radius: 12px;
+        padding: 12px 10px;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-quick:hover {
+        border-color: #f5af19;
+        background: rgba(245, 175, 25, 0.05);
+        transform: translateY(-2px);
+    }
+
+    /* World Clock */
+    .world-clock-item {
+        background: white;
+        border: 2px solid #e8e8e8;
+        border-radius: 15px;
+        padding: 15px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .world-clock-item:hover {
+        border-color: #f5af19;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .wc-flag {
+        font-size: 1.5rem;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .wc-name {
+        font-size: 0.85rem;
+        color: #666;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .wc-time {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #333;
+        display: block;
+    }
+
+    /* Responsive Styles */
+    @@media (max-width: 767px) {
+        .timezone-container {
+            padding: 0 15px;
+        }
+
+        .conversion-card .card-body {
+            padding: 25px 20px;
+        }
+
+        .result-main {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .result-arrow-container {
+            transform: rotate(90deg);
+        }
+
+        .result-time-box {
+            width: 100%;
+        }
+
+        .result-time {
+            font-size: 1.5rem;
+        }
+
+        .result-time.converted {
+            font-size: 1.8rem;
+        }
+
+        .result-flag {
+            font-size: 2rem;
+        }
+
+        .btn-swap {
+            width: 45px;
+            height: 45px;
+            font-size: 1.1rem;
+        }
+    }
+</style>

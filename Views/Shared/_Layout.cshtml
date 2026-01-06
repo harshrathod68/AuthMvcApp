@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AuthMvcApp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-sm">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Dashboard" asp-action="Index">
+                    <span class="brand-icon">🔐</span>
+                    <span class="brand-text">AuthMvcApp</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="toggler-icon">☰</span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <div class="navbar-nav ms-auto">
+                        @if (Context.Session.GetString("UserId") == null)
+                        {
+                            <a class="nav-link nav-btn" asp-controller="Account" asp-action="Login">
+                                <span class="nav-icon">🔑</span> Login
+                            </a>
+                            <a class="nav-link nav-btn nav-btn-primary" asp-controller="Account" asp-action="Register">
+                                <span class="nav-icon">📝</span> Register
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="nav-link nav-btn" asp-controller="Dashboard" asp-action="Index">
+                                <span class="nav-icon">🏠</span> Home
+                            </a>
+                            <a class="nav-link nav-btn nav-btn-danger" asp-controller="Account" asp-action="Logout">
+                                <span class="nav-icon">🚪</span> Logout
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid px-0 flex-grow-1">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="footer mt-auto">
+        <div class="container text-center py-3">
+            © 2026 AuthMvcApp - Email OTP Verification System
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

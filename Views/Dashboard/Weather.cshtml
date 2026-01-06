@@ -1,0 +1,354 @@
+@model AuthMvcApp.Models.WeatherSearchModel
+@{
+    ViewData["Title"] = "Weather Details";
+    var weather = ViewBag.Weather as AuthMvcApp.Models.WeatherModel;
+}
+
+<div class="weather-container">
+    <!-- Search Card -->
+    <div class="card search-card">
+        <div class="card-body">
+            <form asp-action="Weather" method="post" class="search-form">
+                <div class="input-group">
+                    <span class="input-group-text search-icon">🔍</span>
+                    <input asp-for="City" class="form-control search-input" placeholder="Enter city name (e.g., Mumbai, Delhi, London)" />
+                    <button type="submit" class="btn btn-search">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger mt-3">
+            <span>⚠️</span> @ViewBag.Error
+        </div>
+    }
+
+    @if (weather != null)
+    {
+        <!-- Main Weather Card -->
+        <div class="card weather-main-card mt-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="weather-location">
+                            <h2>📍 @weather.CityName, @weather.Country</h2>
+                            <p class="weather-desc">@weather.Description.ToUpper()</p>
+                        </div>
+                        <div class="weather-temp">
+                            <img src="https://openweathermap.org/img/wn/@(weather.Icon)@@4x.png" alt="weather" class="weather-icon" />
+                            <span class="temp-value">@Math.Round(weather.Temperature)°C</span>
+                        </div>
+                        <p class="feels-like">Feels like @Math.Round(weather.FeelsLike)°C</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="weather-details-grid">
+                            <div class="detail-item">
+                                <span class="detail-icon">🌡️</span>
+                                <div class="detail-info">
+                                    <span class="detail-label">Min / Max</span>
+                                    <span class="detail-value">@Math.Round(weather.TempMin)° / @Math.Round(weather.TempMax)°</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-icon">💧</span>
+                                <div class="detail-info">
+                                    <span class="detail-label">Humidity</span>
+                                    <span class="detail-value">@weather.Humidity%</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-icon">💨</span>
+                                <div class="detail-info">
+                                    <span class="detail-label">Wind Speed</span>
+                                    <span class="detail-value">@weather.WindSpeed m/s</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-icon">🌀</span>
+                                <div class="detail-info">
+                                    <span class="detail-label">Pressure</span>
+                                    <span class="detail-value">@weather.Pressure hPa</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Details -->
+        <div class="row mt-4 g-3">
+            <div class="col-md-3 col-6">
+                <div class="card detail-card">
+                    <div class="card-body text-center">
+                        <div class="detail-card-icon">👁️</div>
+                        <h6>Visibility</h6>
+                        <p class="detail-card-value">@weather.Visibility km</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card detail-card">
+                    <div class="card-body text-center">
+                        <div class="detail-card-icon">☁️</div>
+                        <h6>Clouds</h6>
+                        <p class="detail-card-value">@weather.Clouds%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card detail-card">
+                    <div class="card-body text-center">
+                        <div class="detail-card-icon">🌅</div>
+                        <h6>Sunrise</h6>
+                        <p class="detail-card-value">@weather.Sunrise.ToString("hh:mm tt")</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card detail-card">
+                    <div class="card-body text-center">
+                        <div class="detail-card-icon">🌇</div>
+                        <h6>Sunset</h6>
+                        <p class="detail-card-value">@weather.Sunset.ToString("hh:mm tt")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (ViewBag.Error == null)
+    {
+        <!-- Initial State -->
+        <div class="text-center mt-5 initial-state">
+            <div class="initial-icon">🌤️</div>
+            <h4>Search for a City</h4>
+            <p class="text-muted">Enter a city name above to get weather details</p>
+        </div>
+    }
+
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+</div>
+
+<style>
+    .weather-container {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    .search-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 20px;
+    }
+
+    .search-form .input-group {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .search-icon {
+        background: transparent;
+        border: none;
+        font-size: 1.2rem;
+        padding-left: 20px;
+    }
+
+    .search-input {
+        border: none;
+        padding: 18px 15px;
+        font-size: 1.1rem;
+    }
+
+    .search-input:focus {
+        box-shadow: none;
+    }
+
+    .btn-search {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 18px 35px;
+        font-weight: 600;
+        border-radius: 0 15px 15px 0 !important;
+    }
+
+    .btn-search:hover {
+        background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+        color: white;
+    }
+
+    .weather-main-card {
+        background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+        border: none;
+        border-radius: 25px;
+        color: #333;
+    }
+
+    .weather-main-card .card-body {
+        padding: 35px;
+    }
+
+    .weather-location h2 {
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .weather-desc {
+        font-size: 0.95rem;
+        opacity: 0.8;
+        letter-spacing: 2px;
+    }
+
+    .weather-temp {
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+    .weather-icon {
+        width: 120px;
+        height: 120px;
+    }
+
+    .temp-value {
+        font-size: 5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .feels-like {
+        font-size: 1.1rem;
+        opacity: 0.8;
+    }
+
+    .weather-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        height: 100%;
+        align-content: center;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.3);
+        padding: 15px;
+        border-radius: 15px;
+    }
+
+    .detail-icon {
+        font-size: 1.8rem;
+    }
+
+    .detail-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-label {
+        font-size: 0.8rem;
+        opacity: 0.7;
+    }
+
+    .detail-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .detail-card {
+        border: none;
+        border-radius: 20px;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .detail-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .detail-card .card-body {
+        padding: 25px 15px;
+    }
+
+    .detail-card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .detail-card h6 {
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .detail-card-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+    }
+
+    .initial-state {
+        padding: 60px 20px;
+    }
+
+    .initial-icon {
+        font-size: 5rem;
+        margin-bottom: 20px;
+    }
+
+    @@media (max-width: 767px) {
+        .weather-container {
+            padding: 0 10px;
+        }
+
+        .search-form .input-group {
+            flex-direction: column;
+            border-radius: 15px;
+        }
+
+        .search-icon {
+            display: none;
+        }
+
+        .search-input {
+            border-radius: 15px 15px 0 0 !important;
+            text-align: center;
+        }
+
+        .btn-search {
+            border-radius: 0 0 15px 15px !important;
+            width: 100%;
+        }
+
+        .weather-main-card .card-body {
+            padding: 25px 20px;
+        }
+
+        .temp-value {
+            font-size: 3.5rem;
+        }
+
+        .weather-icon {
+            width: 80px;
+            height: 80px;
+        }
+
+        .weather-details-grid {
+            grid-template-columns: 1fr;
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            padding: 12px;
+        }
+    }
+</style>

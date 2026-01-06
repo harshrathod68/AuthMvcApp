@@ -1,0 +1,119 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-container">
+    <div class="row g-4">
+        <!-- Weather Details Box -->
+        <div class="col-md-4">
+            <a asp-action="Weather" class="text-decoration-none">
+                <div class="card dashboard-box weather-box">
+                    <div class="card-body text-center">
+                        <div class="box-icon">🌤️</div>
+                        <h4 class="box-title">Weather Details</h4>
+                        <p class="box-desc">Check current weather conditions</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Currency Conversion Box -->
+        <div class="col-md-4">
+            <a asp-action="Currency" class="text-decoration-none">
+                <div class="card dashboard-box currency-box">
+                    <div class="card-body text-center">
+                        <div class="box-icon">💱</div>
+                        <h4 class="box-title">Currency Conversion</h4>
+                        <p class="box-desc">Convert between currencies</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Time Conversion Box -->
+        <div class="col-md-4">
+            <a asp-action="TimeZone" class="text-decoration-none">
+                <div class="card dashboard-box time-box">
+                    <div class="card-body text-center">
+                        <div class="box-icon">🕐</div>
+                        <h4 class="box-title">Time Conversion</h4>
+                        <p class="box-desc">Convert time between zones</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-box {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        min-height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dashboard-box:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .weather-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .currency-box {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+    }
+
+    .time-box {
+        background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+        color: white;
+    }
+
+    .box-icon {
+        font-size: 4rem;
+        margin-bottom: 15px;
+    }
+
+    .box-title {
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+    }
+
+    .box-desc {
+        font-size: 0.95rem;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    .dashboard-box .card-body {
+        padding: 30px 20px;
+    }
+
+    @@media (max-width: 767px) {
+        .dashboard-box {
+            min-height: 180px;
+        }
+        
+        .box-icon {
+            font-size: 3rem;
+        }
+        
+        .box-title {
+            font-size: 1.1rem;
+        }
+        
+        .box-desc {
+            font-size: 0.85rem;
+        }
+    }
+</style>

@@ -1,0 +1,83 @@
+@model AuthMvcApp.Models.LoginModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="form-container">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h4>🔑 Welcome Back</h4>
+        </div>
+        <div class="card-body">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+            
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+            
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email Address</label>
+                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <input asp-for="Password" class="form-control" placeholder="Enter password" id="password" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password', this)">👁️</button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                @if (ViewBag.ShowForgotPassword == true)
+                {
+                    <div class="mb-3 text-end">
+                        <a asp-action="ForgotPassword" asp-route-email="@ViewBag.UserEmail" class="text-danger">
+                            🔒 Forgot Password?
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3 text-end">
+                        <a asp-action="ForgotPassword" class="text-muted small">Forgot Password?</a>
+                    </div>
+                }
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg">Login</button>
+                </div>
+            </form>
+            
+            <hr />
+            <p class="text-center mb-0">
+                Don't have an account? <a asp-action="Register">Register here</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function togglePassword(inputId, btn) {
+            var input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.innerHTML = "🙈";
+            } else {
+                input.type = "password";
+                btn.innerHTML = "👁️";
+            }
+        }
+    </script>
+}
