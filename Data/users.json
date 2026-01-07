@@ -3,22 +3,44 @@
     "Id": 1,
     "Name": "harshan",
     "Email": "harshrathod534@gmail.com",
-    "Password": "rathod12",
-    "Otp": null,
-    "OtpExpiry": null,
-    "IsVerified": true,
-    "IsAddedUser": false,
-    "CreatedAt": "2026-01-05T18:25:37.9695171+05:30"
-  },
-  {
-    "Id": 2,
-    "Name": "harsh",
-    "Email": "mahendramodi1212@gmail.com",
     "Password": "12345678",
     "Otp": null,
     "OtpExpiry": null,
     "IsVerified": true,
     "IsAddedUser": false,
-    "CreatedAt": "2026-01-05T19:29:23.8898717+05:30"
+    "CreatedAt": "2026-01-07T15:09:03.5181904+05:30"
+  },
+  {
+    "Id": 2,
+    "Name": "pushsheth",
+    "Email": "piyushsheth.rushkar@gmail.com",
+    "Password": "12345678",
+    "Otp": "449775",
+    "OtpExpiry": "2026-01-07T15:15:49.8368911+05:30",
+    "IsVerified": false,
+    "IsAddedUser": false,
+    "CreatedAt": "2026-01-07T15:10:49.8368904+05:30"
+  },
+  {
+    "Id": 3,
+    "Name": "mahendra ",
+    "Email": "mahendramodi1212@gmail.com",
+    "Password": "12345678",
+    "Otp": "779143",
+    "OtpExpiry": "2026-01-07T15:56:11.6360905+05:30",
+    "IsVerified": false,
+    "IsAddedUser": false,
+    "CreatedAt": "2026-01-07T15:51:11.636089+05:30"
+  },
+  {
+    "Id": 4,
+    "Name": "rathod ",
+    "Email": "nikhilpethani.rushkar@gmail.com",
+    "Password": "12345678",
+    "Otp": null,
+    "OtpExpiry": null,
+    "IsVerified": true,
+    "IsAddedUser": false,
+    "CreatedAt": "2026-01-07T16:14:16.144184+05:30"
   }
 ]

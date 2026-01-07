@@ -1,0 +1,22 @@
+[
+  {
+    "Id": 1,
+    "Name": "harsh rathod",
+    "Email": "harshrathod534@gmail.com",
+    "Password": "",
+    "City": "ahemdabad ",
+    "CreatedAt": "2026-01-07T15:53:22.2413886+05:30",
+    "UpdatedAt": null,
+    "IsVerified": true
+  },
+  {
+    "Id": 2,
+    "Name": "mahesh",
+    "Email": "mahesh@gmail.com",
+    "Password": "mahesh1234",
+    "City": "ahemdabad ",
+    "CreatedAt": "2026-01-07T16:08:33.98548+05:30",
+    "UpdatedAt": null,
+    "IsVerified": true
+  }
+]

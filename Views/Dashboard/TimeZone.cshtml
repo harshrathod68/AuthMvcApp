@@ -26,18 +26,11 @@
                     </div>
                 }
 
-                <!-- Date and Time Input Row -->
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <label asp-for="Date" class="form-label">📅 Date</label>
-                        <input asp-for="Date" type="date" class="form-control datetime-input" />
-                        <span asp-validation-for="Date" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="Time" class="form-label">⏰ Time</label>
-                        <input asp-for="Time" type="time" class="form-control datetime-input" />
-                        <span asp-validation-for="Time" class="text-danger"></span>
-                    </div>
+                <!-- Time Input -->
+                <div class="mb-4">
+                    <label asp-for="Time" class="form-label">⏰ Time</label>
+                    <input asp-for="Time" type="time" class="form-control datetime-input" />
+                    <span asp-validation-for="Time" class="text-danger"></span>
                 </div>
 
                 <!-- Timezone Selection Row -->
@@ -106,7 +99,6 @@
                         <span class="result-flag">@(fromInfo?.Flag ?? "🌍")</span>
                         <span class="result-location">@result.FromTimeZoneName</span>
                         <span class="result-time">@result.OriginalDateTime.ToString("hh:mm tt")</span>
-                        <span class="result-date">@result.OriginalDateTime.ToString("ddd, MMM dd, yyyy")</span>
                         <span class="result-abbr">@result.FromAbbreviation</span>
                     </div>
                     
@@ -121,25 +113,11 @@
                         <span class="result-flag">@(toInfo?.Flag ?? "🌍")</span>
                         <span class="result-location">@result.ToTimeZoneName</span>
                         <span class="result-time converted">@result.ConvertedDateTime.ToString("hh:mm tt")</span>
-                        <span class="result-date">@result.ConvertedDateTime.ToString("ddd, MMM dd, yyyy")</span>
                         <span class="result-abbr">@result.ToAbbreviation</span>
                     </div>
                 </div>
 
-                <!-- Day Change Notice -->
-                @if (result.OriginalDateTime.Date != result.ConvertedDateTime.Date)
-                {
-                    <div class="day-change-notice">
-                        @if (result.ConvertedDateTime.Date > result.OriginalDateTime.Date)
-                        {
-                            <span>📅 Next Day</span>
-                        }
-                        else
-                        {
-                            <span>📅 Previous Day</span>
-                        }
-                    </div>
-                }
+                <!-- Day Change Notice removed since no date -->
             </div>
         </div>
     }
@@ -400,10 +378,11 @@
     }
 
     .result-date {
-        font-size: 0.85rem;
-        opacity: 0.8;
-        display: block;
-        margin-bottom: 8px;
+        display: none;
+    }
+
+    .day-change-notice {
+        display: none;
     }
 
     .result-abbr {

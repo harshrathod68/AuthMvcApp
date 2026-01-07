@@ -234,12 +234,14 @@ namespace AuthMvcApp.Controllers
                 return View(model);
             }
 
-            // Parse date and time
-            if (!DateTime.TryParse($"{model.Date} {model.Time}", out DateTime dateTime))
+            // Parse time with today's date
+            if (!TimeSpan.TryParse(model.Time, out TimeSpan timeSpan))
             {
-                ViewBag.Error = "Invalid date or time format";
+                ViewBag.Error = "Invalid time format";
                 return View(model);
             }
+            
+            var dateTime = DateTime.Today.Add(timeSpan);
 
             // Perform time zone conversion
             var result = _timeZoneService.ConvertTime(

@@ -1,0 +1,117 @@
+@model AuthMvcApp.Models.CreateUserModel
+@{
+    ViewData["Title"] = "Add New User";
+}
+
+<div class="form-container" style="max-width: 550px;">
+    <div class="card">
+        <div class="card-header text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <h4>➕ Add New User</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Full Name *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">👤</span>
+                        <input asp-for="Name" class="form-control" placeholder="Enter full name" />
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email Address *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">📧</span>
+                        <input asp-for="Email" class="form-control" placeholder="Enter email address" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Password *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">🔒</span>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" id="password" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password', this)">👁️</button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label">Confirm Password *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">🔒</span>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" id="confirmPassword" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmPassword', this)">👁️</button>
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="City" class="form-label">City</label>
+                    <div class="input-group">
+                        <span class="input-group-text">🏙️</span>
+                        <input asp-for="City" class="form-control" placeholder="Enter city" />
+                    </div>
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+
+                <div class="alert alert-info">
+                    <small>💡 This user will be able to login with the email and password you set here.</small>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        ➕ Add User
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        ← Back to List
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .input-group-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        font-size: 1.1rem;
+        padding: 12px 15px;
+    }
+
+    .input-group .form-control {
+        border-left: none;
+    }
+
+    .input-group .form-control:focus {
+        border-color: #667eea;
+    }
+
+    .input-group .btn-outline-secondary {
+        border-color: #e8e8e8;
+        background: #f8f9fa;
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function togglePassword(inputId, btn) {
+            var input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.innerHTML = "🙈";
+            } else {
+                input.type = "password";
+                btn.innerHTML = "👁️";
+            }
+        }
+    </script>
+}

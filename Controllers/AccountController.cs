@@ -7,12 +7,18 @@ namespace AuthMvcApp.Controllers
     public class AccountController : Controller
     {
         private readonly IJsonDataService _dataService;
+        private readonly IUserDataService _userDataService;
         private readonly IOtpService _otpService;
         private readonly IEmailService _emailService;
 
-        public AccountController(IJsonDataService dataService, IOtpService otpService, IEmailService emailService)
+        public AccountController(
+            IJsonDataService dataService, 
+            IUserDataService userDataService,
+            IOtpService otpService, 
+            IEmailService emailService)
         {
             _dataService = dataService;
+            _userDataService = userDataService;
             _otpService = otpService;
             _emailService = emailService;
         }
@@ -159,21 +165,44 @@ namespace AuthMvcApp.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
+            // First check in registered users (users.json)
             var user = _dataService.GetUserByEmail(model.Email);
             
-            if (user == null)
+            if (user != null)
+            {
+                if (!user.IsVerified)
+                {
+                    ModelState.AddModelError("", "Email not verified. Please verify first.");
+                    return View(model);
+                }
+
+                if (user.Password != model.Password)
+                {
+                    ViewBag.ShowForgotPassword = true;
+                    ViewBag.UserEmail = model.Email;
+                    ModelState.AddModelError("", "Invalid password.");
+                    return View(model);
+                }
+
+                // Login successful for registered user
+                HttpContext.Session.SetString("UserId", user.Id.ToString());
+                HttpContext.Session.SetString("UserName", user.Name);
+                HttpContext.Session.SetString("UserEmail", user.Email);
+                
+                return RedirectToAction("Index", "Dashboard");
+            }
+
+            // If not found in users.json, check in userdata.json (added users)
+            var addedUser = _userDataService.GetAllUsers()
+                .FirstOrDefault(u => u.Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase));
+
+            if (addedUser == null)
             {
                 ModelState.AddModelError("", "Email not registered.");
                 return View(model);
             }
 
-            if (!user.IsVerified)
-            {
-                ModelState.AddModelError("", "Email not verified. Please verify first.");
-                return View(model);
-            }
-
-            if (user.Password != model.Password)
+            if (addedUser.Password != model.Password)
             {
                 ViewBag.ShowForgotPassword = true;
                 ViewBag.UserEmail = model.Email;
@@ -181,9 +210,10 @@ namespace AuthMvcApp.Controllers
                 return View(model);
             }
 
-            HttpContext.Session.SetString("UserId", user.Id.ToString());
-            HttpContext.Session.SetString("UserName", user.Name);
-            HttpContext.Session.SetString("UserEmail", user.Email);
+            // Login successful for added user
+            HttpContext.Session.SetString("UserId", addedUser.Id.ToString());
+            HttpContext.Session.SetString("UserName", addedUser.Name);
+            HttpContext.Session.SetString("UserEmail", addedUser.Email);
             
             return RedirectToAction("Index", "Dashboard");
         }
