@@ -21,7 +21,31 @@
                 </button>
                 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <div class="navbar-nav ms-auto">
+                    <div class="navbar-nav ms-auto align-items-center">
+                        <!-- Language Selector -->
+                        <div class="dropdown me-3">
+                            <button class="btn btn-translate dropdown-toggle notranslate" type="button" data-bs-toggle="dropdown">
+                                🌐 Language
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end lang-dropdown notranslate">
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('en')">🇬🇧 English</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('hi')">🇮🇳 हिंदी</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('bn')">🇮🇳 বাংলা</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('ta')">🇮🇳 தமிழ்</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('te')">🇮🇳 తెలుగు</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('mr')">🇮🇳 मराठी</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('gu')">🇮🇳 ગુજરાતી</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('ar')">🇸🇦 العربية</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('zh-CN')">🇨🇳 中文</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('ja')">🇯🇵 日本語</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('fr')">🇫🇷 Français</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('de')">🇩🇪 Deutsch</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('es')">🇪🇸 Español</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('ru')">🇷🇺 Русский</a></li>
+                            </ul>
+                        </div>
+                        
                         @if (Context.Session.GetString("UserId") == null)
                         {
                             <a class="nav-link nav-btn" asp-controller="Account" asp-action="Login">
@@ -48,6 +72,10 @@
             </div>
         </nav>
     </header>
+    
+    <!-- Hidden Google Translate Element -->
+    <div id="google_translate_element" style="display:none;"></div>
+    
     <div class="container-fluid px-0 flex-grow-1">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -60,6 +88,68 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Google Translate -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+        
+        function translatePage(lang) {
+            var select = document.querySelector('#google_translate_element select');
+            if (select) {
+                select.value = lang;
+                select.dispatchEvent(new Event('change'));
+            } else {
+                // If Google Translate not loaded, try cookie method
+                document.cookie = "googtrans=/en/" + lang;
+                document.cookie = "googtrans=/en/" + lang + ";domain=" + window.location.hostname;
+                location.reload();
+            }
+        }
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    
+    <style>
+        .btn-translate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .btn-translate:hover {
+            background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+            color: white !important;
+        }
+        .lang-dropdown {
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: none;
+            padding: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .lang-dropdown .dropdown-item {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+        .lang-dropdown .dropdown-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        /* Hide Google Translate bar */
+        .goog-te-banner-frame, .skiptranslate { display: none !important; }
+        body { top: 0 !important; }
+        /* Don't translate language dropdown */
+        .notranslate { translate: no; }
+    </style>
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

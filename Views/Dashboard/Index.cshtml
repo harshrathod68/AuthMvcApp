@@ -42,6 +42,58 @@
                 </div>
             </a>
         </div>
+
+        <!-- Country Information Box -->
+        <div class="col-md-4">
+            <a asp-action="Country" class="text-decoration-none">
+                <div class="card dashboard-box country-box">
+                    <div class="card-body text-center">
+                        <div class="box-icon">🌍</div>
+                        <h4 class="box-title">Country Information</h4>
+                        <p class="box-desc">Explore country details</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- News Box -->
+        <div class="col-md-4">
+            <a asp-action="News" class="text-decoration-none">
+                <div class="card dashboard-box news-box">
+                    <div class="card-body text-center">
+                        <div class="box-icon">📰</div>
+                        <h4 class="box-title">Latest News</h4>
+                        <p class="box-desc">Read trending headlines</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Notes Box -->
+        <div class="col-md-4">
+            <a asp-controller="Note" asp-action="Index" class="text-decoration-none">
+                <div class="card dashboard-box notes-box">
+                    <div class="card-body text-center">
+                        <div class="box-icon">📝</div>
+                        <h4 class="box-title">My Notes</h4>
+                        <p class="box-desc">Save & organize your notes</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Habit Tracker Box -->
+        <div class="col-md-4">
+            <a asp-controller="Habit" asp-action="Index" class="text-decoration-none">
+                <div class="card dashboard-box habit-box">
+                    <div class="card-body text-center">
+                        <div class="box-icon">🎯</div>
+                        <h4 class="box-title">Habit Tracker</h4>
+                        <p class="box-desc">Build better habits daily</p>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 
@@ -74,6 +126,26 @@
     }
 
     .time-box {
+        background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+        color: white;
+    }
+
+    .country-box {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .news-box {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+    }
+
+    .notes-box {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        color: #333;
+    }
+
+    .habit-box {
         background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
         color: white;
     }

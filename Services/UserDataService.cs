@@ -145,6 +145,11 @@ namespace AuthMvcApp.Services
                         existingUser.Password = user.Password;
                     }
                     
+                    // Update OTP fields (for verification flow)
+                    existingUser.Otp = user.Otp;
+                    existingUser.OtpExpiry = user.OtpExpiry;
+                    existingUser.IsVerified = user.IsVerified;
+                    
                     SaveUsers(users);
                     
                     _logger.LogInformation("Updated user with ID: {Id}", user.Id);

@@ -7,29 +7,35 @@ namespace AuthMvcApp.Controllers
     /// <summary>
     /// Controller for user data management
     /// Handles CRUD operations for user data stored in JSON
+    /// Includes OTP verification for adding new users
     /// </summary>
     public class UserController : Controller
     {
         private readonly IUserDataService _userDataService;
+        private readonly IOtpService _otpService;
+        private readonly IEmailService _emailService;
         private readonly ILogger<UserController> _logger;
 
         /// <summary>
         /// Constructor with dependency injection
         /// </summary>
-        /// <param name="userDataService">Service for user data operations</param>
-        /// <param name="logger">Logger for logging operations</param>
-        public UserController(IUserDataService userDataService, ILogger<UserController> logger)
+        public UserController(
+            IUserDataService userDataService, 
+            IOtpService otpService,
+            IEmailService emailService,
+            ILogger<UserController> logger)
         {
             _userDataService = userDataService;
+            _otpService = otpService;
+            _emailService = emailService;
             _logger = logger;
         }
 
         #region List Users
 
         /// <summary>
-        /// Displays the list of all users
+        /// Displays the list of all verified users
         /// </summary>
-        /// <returns>User list view</returns>
         public IActionResult Index()
         {
             if (!IsAuthenticated())
@@ -37,7 +43,9 @@ namespace AuthMvcApp.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            // Only show verified users
             var users = _userDataService.GetAllUsers()
+                .Where(u => u.IsVerified)
                 .OrderByDescending(u => u.CreatedAt)
                 .ToList();
             
@@ -47,12 +55,11 @@ namespace AuthMvcApp.Controllers
 
         #endregion
 
-        #region Create User
+        #region Create User with OTP
 
         /// <summary>
         /// Displays the create user form
         /// </summary>
-        /// <returns>Create user view</returns>
         [HttpGet]
         public IActionResult Create()
         {
@@ -66,13 +73,11 @@ namespace AuthMvcApp.Controllers
         }
 
         /// <summary>
-        /// Handles the create user form submission
+        /// Handles the create user form submission - sends OTP
         /// </summary>
-        /// <param name="model">User data from form</param>
-        /// <returns>Redirect to list on success, form on error</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(CreateUserModel model)
+        public async Task<IActionResult> Create(CreateUserModel model)
         {
             if (!IsAuthenticated())
             {
@@ -81,13 +86,12 @@ namespace AuthMvcApp.Controllers
 
             ViewBag.UserName = HttpContext.Session.GetString("UserName");
 
-            // Validate model
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            // Check for duplicate email
+            // Check for duplicate email in userdata.json
             if (_userDataService.EmailExists(model.Email))
             {
                 ModelState.AddModelError("Email", "This email already exists");
@@ -96,22 +100,46 @@ namespace AuthMvcApp.Controllers
 
             try
             {
-                // Create new user
+                // Generate OTP
+                var otp = _otpService.GenerateOtp();
+
+                // Create user with unverified status
                 var user = new UserDataModel
                 {
                     Name = model.Name,
                     Email = model.Email,
                     Password = model.Password,
                     City = model.City,
-                    IsVerified = true
+                    Otp = otp,
+                    OtpExpiry = DateTime.Now.AddMinutes(_otpService.GetExpiryMinutes()),
+                    IsVerified = false
                 };
 
                 _userDataService.AddUser(user);
+
+                // Send OTP email
+                var sent = await _emailService.SendOtpEmailAsync(model.Email, otp);
+                if (!sent)
+                {
+                    // Remove unverified user if email fails
+                    var addedUser = _userDataService.GetAllUsers()
+                        .FirstOrDefault(u => u.Email == model.Email && !u.IsVerified);
+                    if (addedUser != null)
+                    {
+                        _userDataService.DeleteUser(addedUser.Id);
+                    }
+                    
+                    ModelState.AddModelError("", "Failed to send OTP. Please try again.");
+                    return View(model);
+                }
+
+                // Store email in TempData for verification
+                TempData["AddUserEmail"] = model.Email;
+                TempData["Success"] = $"OTP sent to {model.Email}. Please verify!";
                 
-                TempData["Success"] = "User created successfully!";
-                _logger.LogInformation("User created: {Email}", model.Email);
+                _logger.LogInformation("OTP sent for new user: {Email}", model.Email);
                 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(VerifyOtp));
             }
             catch (Exception ex)
             {
@@ -121,6 +149,135 @@ namespace AuthMvcApp.Controllers
             }
         }
 
+        /// <summary>
+        /// Displays OTP verification page for new user
+        /// </summary>
+        [HttpGet]
+        public IActionResult VerifyOtp()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var email = TempData["AddUserEmail"]?.ToString();
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction(nameof(Create));
+            }
+
+            TempData.Keep("AddUserEmail");
+            ViewBag.UserName = HttpContext.Session.GetString("UserName");
+            
+            return View(new UserOtpVerificationModel { Email = email });
+        }
+
+        /// <summary>
+        /// Handles OTP verification for new user
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult VerifyOtp(UserOtpVerificationModel model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var email = TempData["AddUserEmail"]?.ToString();
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction(nameof(Create));
+            }
+
+            model.Email = email;
+            ViewBag.UserName = HttpContext.Session.GetString("UserName");
+
+            if (!ModelState.IsValid)
+            {
+                TempData.Keep("AddUserEmail");
+                return View(model);
+            }
+
+            // Find unverified user
+            var user = _userDataService.GetAllUsers()
+                .FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase) && !u.IsVerified);
+
+            if (user == null)
+            {
+                TempData["Error"] = "User not found. Please try again.";
+                return RedirectToAction(nameof(Create));
+            }
+
+            // Check OTP expiry
+            if (user.OtpExpiry == null || user.OtpExpiry < DateTime.Now)
+            {
+                ModelState.AddModelError("Otp", "OTP expired. Please click Resend OTP.");
+                TempData.Keep("AddUserEmail");
+                return View(model);
+            }
+
+            // Verify OTP
+            if (user.Otp != model.Otp)
+            {
+                ModelState.AddModelError("Otp", "Invalid OTP. Please try again.");
+                TempData.Keep("AddUserEmail");
+                return View(model);
+            }
+
+            // Mark user as verified
+            user.IsVerified = true;
+            user.Otp = null;
+            user.OtpExpiry = null;
+            _userDataService.UpdateUser(user);
+
+            TempData["Success"] = "User verified and added successfully!";
+            _logger.LogInformation("User verified: {Email}", email);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>
+        /// Resends OTP for user verification
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendOtp()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var email = TempData["AddUserEmail"]?.ToString();
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction(nameof(Create));
+            }
+
+            var user = _userDataService.GetAllUsers()
+                .FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase) && !u.IsVerified);
+
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Create));
+            }
+
+            // Generate new OTP
+            var otp = _otpService.GenerateOtp();
+            user.Otp = otp;
+            user.OtpExpiry = DateTime.Now.AddMinutes(_otpService.GetExpiryMinutes());
+            _userDataService.UpdateUser(user);
+
+            // Send OTP
+            await _emailService.SendOtpEmailAsync(email, otp);
+
+            TempData["AddUserEmail"] = email;
+            TempData["Success"] = "New OTP sent!";
+            
+            return RedirectToAction(nameof(VerifyOtp));
+        }
+
         #endregion
 
         #region Edit User
@@ -128,8 +285,6 @@ namespace AuthMvcApp.Controllers
         /// <summary>
         /// Displays the edit user form
         /// </summary>
-        /// <param name="id">User ID to edit</param>
-        /// <returns>Edit user view</returns>
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -161,8 +316,6 @@ namespace AuthMvcApp.Controllers
         /// <summary>
         /// Handles the edit user form submission
         /// </summary>
-        /// <param name="model">Updated user data</param>
-        /// <returns>Redirect to list on success, form on error</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(EditUserModel model)
@@ -174,13 +327,11 @@ namespace AuthMvcApp.Controllers
 
             ViewBag.UserName = HttpContext.Session.GetString("UserName");
 
-            // Validate model
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            // Check for duplicate email (excluding current user)
             if (_userDataService.EmailExists(model.Email, model.Id))
             {
                 ModelState.AddModelError("Email", "This email already exists");
@@ -227,8 +378,6 @@ namespace AuthMvcApp.Controllers
         /// <summary>
         /// Displays user details
         /// </summary>
-        /// <param name="id">User ID to view</param>
-        /// <returns>User details view</returns>
         public IActionResult Details(int id)
         {
             if (!IsAuthenticated())
@@ -255,8 +404,6 @@ namespace AuthMvcApp.Controllers
         /// <summary>
         /// Deletes a user
         /// </summary>
-        /// <param name="id">User ID to delete</param>
-        /// <returns>Redirect to list</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
@@ -293,10 +440,6 @@ namespace AuthMvcApp.Controllers
 
         #region Helper Methods
 
-        /// <summary>
-        /// Checks if user is authenticated
-        /// </summary>
-        /// <returns>True if authenticated, false otherwise</returns>
         private bool IsAuthenticated()
         {
             return !string.IsNullOrEmpty(HttpContext.Session.GetString("UserId"));

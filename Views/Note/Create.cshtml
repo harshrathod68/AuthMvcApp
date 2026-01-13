@@ -1,0 +1,198 @@
+@model AuthMvcApp.Models.NoteCreateModel
+@{
+    ViewData["Title"] = "Create Note";
+}
+
+<div class="create-note-container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card create-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <span class="create-icon">
+                            @(Model.Category == "text" ? "📝" : 
+                              Model.Category == "image" ? "🖼️" : 
+                              Model.Category == "link" ? "🔗" : 
+                              Model.Category == "todo" ? "✅" : "💡")
+                        </span>
+                        <h4 class="fw-bold mt-2">Create New Note</h4>
+                    </div>
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label asp-for="Title" class="form-label">Title</label>
+                                <input asp-for="Title" class="form-control" placeholder="Note title..." />
+                                <span asp-validation-for="Title" class="text-danger small"></span>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label asp-for="Category" class="form-label">Category</label>
+                                <select asp-for="Category" class="form-select" id="categorySelect">
+                                    <option value="text">📝 Text</option>
+                                    <option value="image">🖼️ Image</option>
+                                    <option value="link">🔗 Link</option>
+                                    <option value="todo">✅ Todo</option>
+                                    <option value="idea">💡 Idea</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-12" id="contentSection">
+                                <label asp-for="Content" class="form-label">Content</label>
+                                <textarea asp-for="Content" class="form-control" rows="5" placeholder="Write your note..."></textarea>
+                            </div>
+                            
+                            <div class="col-md-12" id="imageSection" style="display:none;">
+                                <label asp-for="ImageUrl" class="form-label">Image URL</label>
+                                <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+                                <small class="text-muted">Paste image URL from web</small>
+                            </div>
+                            
+                            <div class="col-md-12" id="linkSection" style="display:none;">
+                                <label asp-for="LinkUrl" class="form-label">Link URL</label>
+                                <input asp-for="LinkUrl" class="form-control" placeholder="https://example.com" />
+                            </div>
+                            
+                            <div class="col-md-12" id="todoSection" style="display:none;">
+                                <label class="form-label">Todo Items</label>
+                                <div id="todoList"></div>
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addTodoItem()">
+                                    + Add Item
+                                </button>
+                                <input type="hidden" asp-for="TodoItemsJson" id="todoItemsJson" />
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="Color" class="form-label">Color</label>
+                                <div class="color-picker">
+                                    <input type="radio" name="Color" value="#667eea" id="c1" checked />
+                                    <label for="c1" style="background:#667eea;"></label>
+                                    
+                                    <input type="radio" name="Color" value="#f093fb" id="c2" />
+                                    <label for="c2" style="background:#f093fb;"></label>
+                                    
+                                    <input type="radio" name="Color" value="#4facfe" id="c3" />
+                                    <label for="c3" style="background:#4facfe;"></label>
+                                    
+                                    <input type="radio" name="Color" value="#43e97b" id="c4" />
+                                    <label for="c4" style="background:#43e97b;"></label>
+                                    
+                                    <input type="radio" name="Color" value="#fa709a" id="c5" />
+                                    <label for="c5" style="background:#fa709a;"></label>
+                                    
+                                    <input type="radio" name="Color" value="#ffeaa7" id="c6" />
+                                    <label for="c6" style="background:#ffeaa7;"></label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-3">
+                            <button type="submit" class="btn btn-save">Save Note</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .create-note-container { padding: 20px; }
+    
+    .create-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .create-icon { font-size: 3rem; }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        padding: 12px 15px;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+    }
+    
+    .color-picker {
+        display: flex;
+        gap: 10px;
+    }
+    .color-picker input { display: none; }
+    .color-picker label {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.2s;
+    }
+    .color-picker input:checked + label {
+        border-color: #333;
+        transform: scale(1.1);
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 30px;
+        font-weight: 600;
+    }
+    .btn-save:hover { color: white; }
+    
+    .todo-item {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .todo-item input[type="text"] { flex: 1; }
+    .todo-item .btn-remove { color: #e74c3c; }
+</style>
+
+@section Scripts {
+    <script>
+        document.getElementById('categorySelect').addEventListener('change', function() {
+            var cat = this.value;
+            document.getElementById('contentSection').style.display = (cat === 'text' || cat === 'idea') ? 'block' : 'none';
+            document.getElementById('imageSection').style.display = cat === 'image' ? 'block' : 'none';
+            document.getElementById('linkSection').style.display = cat === 'link' ? 'block' : 'none';
+            document.getElementById('todoSection').style.display = cat === 'todo' ? 'block' : 'none';
+        });
+        
+        // Trigger on load
+        document.getElementById('categorySelect').dispatchEvent(new Event('change'));
+        
+        var todoItems = [];
+        
+        function addTodoItem() {
+            var div = document.createElement('div');
+            div.className = 'todo-item';
+            div.innerHTML = '<input type="text" class="form-control" placeholder="Todo item..." onchange="updateTodoJson()" />' +
+                           '<button type="button" class="btn btn-sm btn-remove" onclick="this.parentElement.remove(); updateTodoJson();">🗑️</button>';
+            document.getElementById('todoList').appendChild(div);
+        }
+        
+        function updateTodoJson() {
+            var items = [];
+            document.querySelectorAll('#todoList input[type="text"]').forEach(function(input) {
+                if (input.value.trim()) {
+                    items.push({ Text: input.value.trim(), IsCompleted: false });
+                }
+            });
+            document.getElementById('todoItemsJson').value = JSON.stringify(items);
+        }
+        
+        // Add first todo item if category is todo
+        if (document.getElementById('categorySelect').value === 'todo') {
+            addTodoItem();
+        }
+    </script>
+}

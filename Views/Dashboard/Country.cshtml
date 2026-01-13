@@ -1,0 +1,453 @@
+@model AuthMvcApp.Models.CountrySearchModel
+@{
+    ViewData["Title"] = "Country Information";
+    var countryInfo = ViewBag.CountryInfo as AuthMvcApp.Models.CountryInfoModel;
+}
+
+<div class="country-container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Search Card -->
+            <div class="card search-card mb-4">
+                <div class="card-body p-4">
+                    <div class="text-center mb-3">
+                        <span class="search-icon">🌍</span>
+                        <h4 class="fw-bold mt-2">Country Information</h4>
+                        <p class="text-muted">Search any country to get detailed information</p>
+                    </div>
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-circle me-2"></i>@ViewBag.Error
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Country" method="post">
+                        <div class="row g-3 align-items-end justify-content-center">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Country Name</label>
+                                <input asp-for="Country" class="form-control form-control-lg" 
+                                       placeholder="e.g., India, Japan, Brazil" autocomplete="off" />
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-search me-2"></i>Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if (countryInfo != null)
+            {
+                <!-- Country Result Card -->
+                <div class="card result-card">
+                    <div class="card-body p-0">
+                        <!-- Header with Flag -->
+                        <div class="country-header">
+                            <div class="row align-items-center">
+                                <div class="col-md-3 text-center">
+                                    @if (!string.IsNullOrEmpty(countryInfo.FlagUrl))
+                                    {
+                                        <img src="@countryInfo.FlagUrl" alt="@countryInfo.FlagAlt" class="country-flag" />
+                                    }
+                                </div>
+                                <div class="col-md-9">
+                                    <h2 class="country-name">@countryInfo.Name</h2>
+                                    <p class="official-name">@countryInfo.OfficialName</p>
+                                    <div class="country-badges">
+                                        @if (countryInfo.Independent)
+                                        {
+                                            <span class="badge bg-success me-2">Independent</span>
+                                        }
+                                        @if (countryInfo.UnMember)
+                                        {
+                                            <span class="badge bg-primary me-2">UN Member</span>
+                                        }
+                                        @if (countryInfo.Landlocked)
+                                        {
+                                            <span class="badge bg-warning text-dark">Landlocked</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info Grid -->
+                        <div class="info-grid p-4">
+                            <div class="row g-4">
+                                <!-- Basic Info -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="info-box">
+                                        <div class="info-icon">🏛️</div>
+                                        <div class="info-content">
+                                            <span class="info-label">Capital</span>
+                                            <span class="info-value">@(string.IsNullOrEmpty(countryInfo.Capital) ? "N/A" : countryInfo.Capital)</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="info-box">
+                                        <div class="info-icon">🌏</div>
+                                        <div class="info-content">
+                                            <span class="info-label">Region</span>
+                                            <span class="info-value">@countryInfo.Region @(!string.IsNullOrEmpty(countryInfo.SubRegion) ? $"({countryInfo.SubRegion})" : "")</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="info-box">
+                                        <div class="info-icon">👥</div>
+                                        <div class="info-content">
+                                            <span class="info-label">Population</span>
+                                            <span class="info-value">@countryInfo.Population.ToString("N0")</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="info-box">
+                                        <div class="info-icon">📐</div>
+                                        <div class="info-content">
+                                            <span class="info-label">Area</span>
+                                            <span class="info-value">@countryInfo.Area.ToString("N0") km²</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="info-box">
+                                        <div class="info-icon">📞</div>
+                                        <div class="info-content">
+                                            <span class="info-label">Phone Code</span>
+                                            <span class="info-value">@(string.IsNullOrEmpty(countryInfo.PhoneCode) ? "N/A" : countryInfo.PhoneCode)</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="info-box">
+                                        <div class="info-icon">🚗</div>
+                                        <div class="info-content">
+                                            <span class="info-label">Driving Side</span>
+                                            <span class="info-value text-capitalize">@(string.IsNullOrEmpty(countryInfo.DrivingSide) ? "N/A" : countryInfo.DrivingSide)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Info Sections -->
+                        <div class="additional-info p-4 pt-0">
+                            <div class="row g-4">
+                                <!-- Languages -->
+                                @if (countryInfo.Languages.Any())
+                                {
+                                    <div class="col-md-6">
+                                        <div class="detail-section">
+                                            <h6 class="section-title"><i class="bi bi-translate me-2"></i>Languages</h6>
+                                            <div class="tag-list">
+                                                @foreach (var lang in countryInfo.Languages)
+                                                {
+                                                    <span class="tag tag-language">@lang</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Currencies -->
+                                @if (countryInfo.Currencies.Any())
+                                {
+                                    <div class="col-md-6">
+                                        <div class="detail-section">
+                                            <h6 class="section-title"><i class="bi bi-currency-exchange me-2"></i>Currencies</h6>
+                                            <div class="tag-list">
+                                                @foreach (var currency in countryInfo.Currencies)
+                                                {
+                                                    <span class="tag tag-currency">@currency.Name (@currency.Code) @currency.Symbol</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Timezones -->
+                                @if (countryInfo.Timezones.Any())
+                                {
+                                    <div class="col-md-6">
+                                        <div class="detail-section">
+                                            <h6 class="section-title"><i class="bi bi-clock me-2"></i>Timezones</h6>
+                                            <div class="tag-list">
+                                                @foreach (var tz in countryInfo.Timezones)
+                                                {
+                                                    <span class="tag tag-timezone">@tz</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Borders -->
+                                @if (countryInfo.Borders.Any())
+                                {
+                                    <div class="col-md-6">
+                                        <div class="detail-section">
+                                            <h6 class="section-title"><i class="bi bi-geo-alt me-2"></i>Bordering Countries</h6>
+                                            <div class="tag-list">
+                                                @foreach (var border in countryInfo.Borders)
+                                                {
+                                                    <span class="tag tag-border">@border</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Country Codes & Links -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="codes-section">
+                                        <span class="code-item"><strong>ISO Alpha-2:</strong> @countryInfo.CountryCode2</span>
+                                        <span class="code-item"><strong>ISO Alpha-3:</strong> @countryInfo.CountryCode3</span>
+                                        @if (!string.IsNullOrEmpty(countryInfo.FifaCode))
+                                        {
+                                            <span class="code-item"><strong>FIFA:</strong> @countryInfo.FifaCode</span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(countryInfo.TopLevelDomain))
+                                        {
+                                            <span class="code-item"><strong>Domain:</strong> @countryInfo.TopLevelDomain</span>
+                                        }
+                                        <span class="code-item"><strong>Week Starts:</strong> @countryInfo.StartOfWeek</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Map Link -->
+                            @if (!string.IsNullOrEmpty(countryInfo.GoogleMapsUrl))
+                            {
+                                <div class="text-center mt-4">
+                                    <a href="@countryInfo.GoogleMapsUrl" target="_blank" class="btn btn-outline-primary btn-lg">
+                                        <i class="bi bi-map me-2"></i>View on Google Maps
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .country-container {
+        padding: 20px 0;
+    }
+
+    .search-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .search-icon {
+        font-size: 3rem;
+    }
+
+    .result-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .country-header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 30px;
+    }
+
+    .country-flag {
+        width: 150px;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .country-name {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .official-name {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-bottom: 15px;
+    }
+
+    .country-badges .badge {
+        font-size: 0.85rem;
+        padding: 8px 15px;
+        border-radius: 20px;
+    }
+
+    .info-box {
+        display: flex;
+        align-items: center;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .info-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-icon {
+        font-size: 2rem;
+        margin-right: 15px;
+    }
+
+    .info-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .detail-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .section-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tag {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .tag-language {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .tag-currency {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+    }
+
+    .tag-timezone {
+        background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+        color: white;
+    }
+
+    .tag-border {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .codes-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .code-item {
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 12px 25px;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #3d9be0 0%, #00d4e0 100%);
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-primary {
+        border-radius: 12px;
+        padding: 12px 30px;
+        font-weight: 600;
+    }
+
+    .form-control-lg {
+        border-radius: 12px;
+        border: 2px solid #e0e0e0;
+        padding: 12px 20px;
+    }
+
+    .form-control-lg:focus {
+        border-color: #4facfe;
+        box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.15);
+    }
+
+    @@media (max-width: 767px) {
+        .country-header {
+            text-align: center;
+        }
+
+        .country-flag {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+
+        .country-name {
+            font-size: 1.6rem;
+        }
+
+        .info-box {
+            padding: 15px;
+        }
+
+        .codes-section {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+    }
+</style>

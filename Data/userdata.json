@@ -1,15 +1,5 @@
 [
   {
-    "Id": 1,
-    "Name": "harsh rathod",
-    "Email": "harshrathod534@gmail.com",
-    "Password": "",
-    "City": "ahemdabad ",
-    "CreatedAt": "2026-01-07T15:53:22.2413886+05:30",
-    "UpdatedAt": null,
-    "IsVerified": true
-  },
-  {
     "Id": 2,
     "Name": "mahesh",
     "Email": "mahesh@gmail.com",
@@ -17,6 +7,44 @@
     "City": "ahemdabad ",
     "CreatedAt": "2026-01-07T16:08:33.98548+05:30",
     "UpdatedAt": null,
+    "Otp": null,
+    "OtpExpiry": null,
+    "IsVerified": true
+  },
+  {
+    "Id": 3,
+    "Name": "harshan",
+    "Email": "harshrathod534@gmail.com",
+    "Password": "12345678",
+    "City": "Ahmedabad",
+    "CreatedAt": "2026-01-08T17:30:38.3368645+05:30",
+    "UpdatedAt": "2026-01-08T17:31:57.3593201+05:30",
+    "Otp": null,
+    "OtpExpiry": null,
+    "IsVerified": true
+  },
+  {
+    "Id": 4,
+    "Name": "rathod",
+    "Email": "rathod343@gmail.com",
+    "Password": "87654321",
+    "City": "sirohi",
+    "CreatedAt": "2026-01-08T17:36:32.0416225+05:30",
+    "UpdatedAt": null,
+    "Otp": "691511",
+    "OtpExpiry": "2026-01-08T17:41:32.0411693+05:30",
+    "IsVerified": false
+  },
+  {
+    "Id": 5,
+    "Name": "piyush sheth",
+    "Email": "fisoce5167@akixpres.com",
+    "Password": "12345678",
+    "City": "goa",
+    "CreatedAt": "2026-01-09T18:24:31.0838902+05:30",
+    "UpdatedAt": "2026-01-09T18:25:10.7288184+05:30",
+    "Otp": null,
+    "OtpExpiry": null,
     "IsVerified": true
   }
 ]

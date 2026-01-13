@@ -1,0 +1,83 @@
+[
+  {
+    "Id": 1,
+    "UserId": "3",
+    "Name": "Drink hot water ",
+    "Description": "wakeup and drink hot water only nothing other like tea and than fresh ",
+    "Icon": "\uD83D\uDCA7",
+    "Color": "#667eea",
+    "Category": "selfcare",
+    "Logs": [
+      {
+        "Date": "2026-01-13",
+        "IsCompleted": false
+      },
+      {
+        "Date": "2026-01-12",
+        "IsCompleted": false
+      }
+    ],
+    "CreatedAt": "2026-01-13T15:48:53.8065559+05:30",
+    "IsActive": true
+  },
+  {
+    "Id": 2,
+    "UserId": "3",
+    "Name": "Exercise ",
+    "Description": "45 min exercise can change your whole day energy ",
+    "Icon": "\uD83D\uDCAA",
+    "Color": "#667eea",
+    "Category": "health",
+    "Logs": [],
+    "CreatedAt": "2026-01-13T15:53:14.3703275+05:30",
+    "IsActive": true
+  },
+  {
+    "Id": 3,
+    "UserId": "3",
+    "Name": "Meditation ",
+    "Description": "just close your eyes and see whatever running in the mind for 10 min ",
+    "Icon": "\uD83E\uDDD8",
+    "Color": "#667eea",
+    "Category": "custom",
+    "Logs": [],
+    "CreatedAt": "2026-01-13T15:57:56.739741+05:30",
+    "IsActive": true
+  },
+  {
+    "Id": 4,
+    "UserId": "3",
+    "Name": "Breakfast ",
+    "Description": "fruits is best of skin care ",
+    "Icon": "\uD83E\uDD57",
+    "Color": "#667eea",
+    "Category": "custom",
+    "Logs": [],
+    "CreatedAt": "2026-01-13T16:00:00.4540565+05:30",
+    "IsActive": true
+  },
+  {
+    "Id": 5,
+    "UserId": "3",
+    "Name": "Pray \uD83D\uDE4F",
+    "Description": "pray to god",
+    "Icon": "\uD83C\uDFAF",
+    "Color": "#667eea",
+    "Category": "custom",
+    "Logs": [],
+    "CreatedAt": "2026-01-13T16:01:29.0981754+05:30",
+    "IsActive": true
+  },
+  {
+    "Id": 6,
+    "UserId": "3",
+    "Name": "Scripting ",
+    "Description": "for content creation make a script for your content you like that you ",
+    "Icon": "\u270D\uFE0F",
+    "Color": "#667eea",
+    "Category": "custom",
+    "Logs": [],
+    "CreatedAt": "2026-01-13T16:03:40.0606272+05:30",
+    "IsActive": true
+  }
+]

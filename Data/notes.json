@@ -1,0 +1,16 @@
+[
+  {
+    "Id": 1,
+    "UserId": "3",
+    "Title": "MY FIRST NOTE",
+    "Content": "when you believe in yourself than any problem can\u0027t stop you becouse the power of whole universe with you thats the magic of believing you stopped when you doubt in self \uD83D\uDE0A.",
+    "Category": "text",
+    "Color": "#43e97b",
+    "IsPinned": false,
+    "ImageUrl": null,
+    "LinkUrl": null,
+    "TodoItems": null,
+    "CreatedAt": "2026-01-13T15:20:22.0949568+05:30",
+    "UpdatedAt": "2026-01-13T15:22:23.3259675+05:30"
+  }
+]

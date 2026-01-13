@@ -1,0 +1,159 @@
+@model AuthMvcApp.Models.NoteEditModel
+@{
+    ViewData["Title"] = "Edit Note";
+}
+
+<div class="edit-note-container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card edit-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <span class="edit-icon">✏️</span>
+                        <h4 class="fw-bold mt-2">Edit Note</h4>
+                    </div>
+
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label asp-for="Title" class="form-label">Title</label>
+                                <input asp-for="Title" class="form-control" />
+                                <span asp-validation-for="Title" class="text-danger small"></span>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label asp-for="Category" class="form-label">Category</label>
+                                <select asp-for="Category" class="form-select" id="categorySelect">
+                                    <option value="text">📝 Text</option>
+                                    <option value="image">🖼️ Image</option>
+                                    <option value="link">🔗 Link</option>
+                                    <option value="todo">✅ Todo</option>
+                                    <option value="idea">💡 Idea</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-12" id="contentSection">
+                                <label asp-for="Content" class="form-label">Content</label>
+                                <textarea asp-for="Content" class="form-control" rows="5"></textarea>
+                            </div>
+                            
+                            <div class="col-md-12" id="imageSection" style="display:none;">
+                                <label asp-for="ImageUrl" class="form-label">Image URL</label>
+                                <input asp-for="ImageUrl" class="form-control" />
+                            </div>
+                            
+                            <div class="col-md-12" id="linkSection" style="display:none;">
+                                <label asp-for="LinkUrl" class="form-label">Link URL</label>
+                                <input asp-for="LinkUrl" class="form-control" />
+                            </div>
+                            
+                            <div class="col-md-12" id="todoSection" style="display:none;">
+                                <label class="form-label">Todo Items</label>
+                                <div id="todoList"></div>
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addTodoItem()">
+                                    + Add Item
+                                </button>
+                                <input type="hidden" asp-for="TodoItemsJson" id="todoItemsJson" />
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Color</label>
+                                <div class="color-picker">
+                                    <input type="radio" name="Color" value="#667eea" id="c1" @(Model.Color == "#667eea" ? "checked" : "") />
+                                    <label for="c1" style="background:#667eea;"></label>
+                                    
+                                    <input type="radio" name="Color" value="#f093fb" id="c2" @(Model.Color == "#f093fb" ? "checked" : "") />
+                                    <label for="c2" style="background:#f093fb;"></label>
+                                    
+                                    <input type="radio" name="Color" value="#4facfe" id="c3" @(Model.Color == "#4facfe" ? "checked" : "") />
+                                    <label for="c3" style="background:#4facfe;"></label>
+                                    
+                                    <input type="radio" name="Color" value="#43e97b" id="c4" @(Model.Color == "#43e97b" ? "checked" : "") />
+                                    <label for="c4" style="background:#43e97b;"></label>
+                                    
+                                    <input type="radio" name="Color" value="#fa709a" id="c5" @(Model.Color == "#fa709a" ? "checked" : "") />
+                                    <label for="c5" style="background:#fa709a;"></label>
+                                    
+                                    <input type="radio" name="Color" value="#ffeaa7" id="c6" @(Model.Color == "#ffeaa7" ? "checked" : "") />
+                                    <label for="c6" style="background:#ffeaa7;"></label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-check mt-4">
+                                    <input type="checkbox" asp-for="IsPinned" class="form-check-input" />
+                                    <label asp-for="IsPinned" class="form-check-label">📌 Pin this note</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-3">
+                            <button type="submit" class="btn btn-save">Update Note</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .edit-note-container { padding: 20px; }
+    .edit-card { border: none; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+    .edit-icon { font-size: 3rem; }
+    .form-control, .form-select { border-radius: 10px; border: 2px solid #e0e0e0; padding: 12px 15px; }
+    .form-control:focus, .form-select:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.15); }
+    .color-picker { display: flex; gap: 10px; }
+    .color-picker input { display: none; }
+    .color-picker label { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; }
+    .color-picker input:checked + label { border-color: #333; transform: scale(1.1); }
+    .btn-save { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; padding: 12px 30px; font-weight: 600; }
+    .btn-save:hover { color: white; }
+    .todo-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+    .todo-item input[type="text"] { flex: 1; }
+</style>
+
+@section Scripts {
+    <script>
+        document.getElementById('categorySelect').addEventListener('change', function() {
+            var cat = this.value;
+            document.getElementById('contentSection').style.display = (cat === 'text' || cat === 'idea') ? 'block' : 'none';
+            document.getElementById('imageSection').style.display = cat === 'image' ? 'block' : 'none';
+            document.getElementById('linkSection').style.display = cat === 'link' ? 'block' : 'none';
+            document.getElementById('todoSection').style.display = cat === 'todo' ? 'block' : 'none';
+        });
+        
+        document.getElementById('categorySelect').dispatchEvent(new Event('change'));
+        
+        // Load existing todo items
+        var existingTodos = @Html.Raw(Model.TodoItemsJson ?? "[]");
+        existingTodos.forEach(function(item) {
+            addTodoItem(item.Text, item.IsCompleted);
+        });
+        
+        function addTodoItem(text, completed) {
+            var div = document.createElement('div');
+            div.className = 'todo-item';
+            div.innerHTML = '<input type="checkbox" class="form-check-input" ' + (completed ? 'checked' : '') + ' onchange="updateTodoJson()" />' +
+                           '<input type="text" class="form-control" value="' + (text || '') + '" onchange="updateTodoJson()" />' +
+                           '<button type="button" class="btn btn-sm text-danger" onclick="this.parentElement.remove(); updateTodoJson();">🗑️</button>';
+            document.getElementById('todoList').appendChild(div);
+        }
+        
+        function updateTodoJson() {
+            var items = [];
+            document.querySelectorAll('#todoList .todo-item').forEach(function(div) {
+                var text = div.querySelector('input[type="text"]').value.trim();
+                var completed = div.querySelector('input[type="checkbox"]').checked;
+                if (text) {
+                    items.push({ Text: text, IsCompleted: completed });
+                }
+            });
+            document.getElementById('todoItemsJson').value = JSON.stringify(items);
+        }
+    </script>
+}

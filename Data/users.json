@@ -1,16 +1,5 @@
 [
   {
-    "Id": 1,
-    "Name": "harshan",
-    "Email": "harshrathod534@gmail.com",
-    "Password": "12345678",
-    "Otp": null,
-    "OtpExpiry": null,
-    "IsVerified": true,
-    "IsAddedUser": false,
-    "CreatedAt": "2026-01-07T15:09:03.5181904+05:30"
-  },
-  {
     "Id": 2,
     "Name": "pushsheth",
     "Email": "piyushsheth.rushkar@gmail.com",
@@ -42,5 +31,38 @@
     "IsVerified": true,
     "IsAddedUser": false,
     "CreatedAt": "2026-01-07T16:14:16.144184+05:30"
+  },
+  {
+    "Id": 5,
+    "Name": "piyush sheth",
+    "Email": "079mz@airsworld.net",
+    "Password": "12345678",
+    "Otp": "935482",
+    "OtpExpiry": "2026-01-08T17:08:40.3775063+05:30",
+    "IsVerified": false,
+    "IsAddedUser": false,
+    "CreatedAt": "2026-01-08T17:00:51.1657262+05:30"
+  },
+  {
+    "Id": 6,
+    "Name": "piyush sheth",
+    "Email": "ufjs6@airsworld.net",
+    "Password": "12345678",
+    "Otp": "292287",
+    "OtpExpiry": "2026-01-08T17:10:04.1860424+05:30",
+    "IsVerified": false,
+    "IsAddedUser": false,
+    "CreatedAt": "2026-01-08T17:05:04.1860243+05:30"
+  },
+  {
+    "Id": 7,
+    "Name": "avsar",
+    "Email": "projtest28@gmail.com",
+    "Password": "12345678",
+    "Otp": null,
+    "OtpExpiry": null,
+    "IsVerified": true,
+    "IsAddedUser": false,
+    "CreatedAt": "2026-01-08T17:07:07.0110464+05:30"
   }
 ]

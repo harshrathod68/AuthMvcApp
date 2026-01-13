@@ -1,0 +1,90 @@
+@model AuthMvcApp.Models.HabitCreateModel
+@{
+    ViewData["Title"] = "Edit Habit";
+    var habitId = ViewBag.HabitId;
+}
+
+<div class="edit-habit-container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card edit-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <span class="edit-icon">✏️</span>
+                        <h4 class="fw-bold mt-2">Edit Habit</h4>
+                    </div>
+
+                    <form asp-action="Edit" asp-route-id="@habitId" method="post">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Habit Name</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <input asp-for="Description" class="form-control" />
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label">Category</label>
+                            <select asp-for="Category" class="form-select">
+                                <option value="health">🏃 Health & Fitness</option>
+                                <option value="learning">📚 Learning</option>
+                                <option value="selfcare">💪 Self-care</option>
+                                <option value="productivity">💼 Productivity</option>
+                                <option value="custom">🎯 Custom</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Icon</label>
+                            <div class="icon-picker">
+                                @foreach (var icon in new[] { "🎯", "🏃", "📖", "💧", "🧘", "😴", "🥗", "💪", "📚", "✍️", "🎨", "🎵" })
+                                {
+                                    <input type="radio" name="Icon" value="@icon" id="icon_@icon" @(Model.Icon == icon ? "checked" : "") />
+                                    <label for="icon_@icon">@icon</label>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Color</label>
+                            <div class="color-picker">
+                                @foreach (var color in new[] { "#667eea", "#f093fb", "#4facfe", "#43e97b", "#fa709a", "#ffeaa7" })
+                                {
+                                    <input type="radio" name="Color" value="@color" id="color_@color.Replace("#", "")" @(Model.Color == color ? "checked" : "") />
+                                    <label for="color_@color.Replace("#", "")" style="background:@color;"></label>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-save">Update Habit</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .edit-habit-container { padding: 20px; }
+    .edit-card { border: none; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+    .edit-icon { font-size: 3rem; }
+    .form-control, .form-select { border-radius: 10px; border: 2px solid #e0e0e0; padding: 12px 15px; }
+    .form-control:focus, .form-select:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.15); }
+    .icon-picker { display: flex; flex-wrap: wrap; gap: 10px; }
+    .icon-picker input { display: none; }
+    .icon-picker label { font-size: 1.8rem; padding: 8px 12px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; }
+    .icon-picker input:checked + label { border-color: #667eea; background: rgba(102,126,234,0.1); }
+    .color-picker { display: flex; gap: 10px; }
+    .color-picker input { display: none; }
+    .color-picker label { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; }
+    .color-picker input:checked + label { border-color: #333; transform: scale(1.1); }
+    .btn-save { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; padding: 12px 30px; font-weight: 600; }
+</style>

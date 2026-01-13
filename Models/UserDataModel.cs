@@ -52,6 +52,16 @@ namespace AuthMvcApp.Models
         public DateTime? UpdatedAt { get; set; }
 
         /// <summary>
+        /// OTP for email verification (not stored permanently)
+        /// </summary>
+        public string? Otp { get; set; }
+
+        /// <summary>
+        /// OTP expiry time
+        /// </summary>
+        public DateTime? OtpExpiry { get; set; }
+
+        /// <summary>
         /// Flag to indicate if user is verified (for login)
         /// </summary>
         public bool IsVerified { get; set; } = true;
@@ -115,5 +125,24 @@ namespace AuthMvcApp.Models
         [StringLength(50, ErrorMessage = "City cannot exceed 50 characters")]
         [Display(Name = "City")]
         public string? City { get; set; }
+    }
+
+    /// <summary>
+    /// Model for OTP verification when adding a new user
+    /// </summary>
+    public class UserOtpVerificationModel
+    {
+        /// <summary>
+        /// Email address of the user being verified
+        /// </summary>
+        public string Email { get; set; } = string.Empty;
+
+        /// <summary>
+        /// OTP entered by the user
+        /// </summary>
+        [Required(ErrorMessage = "OTP is required")]
+        [StringLength(6, MinimumLength = 6, ErrorMessage = "OTP must be 6 digits")]
+        [Display(Name = "OTP")]
+        public string Otp { get; set; } = string.Empty;
     }
 }

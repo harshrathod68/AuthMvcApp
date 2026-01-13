@@ -1,0 +1,294 @@
+@model List<AuthMvcApp.Models.HabitModel>
+@{
+    ViewData["Title"] = "Habit Tracker";
+    var habitStats = ViewBag.HabitStats as Dictionary<int, AuthMvcApp.Models.HabitStats>;
+    var today = ViewBag.Today as string;
+    var weekDays = ViewBag.WeekDays as List<(string Date, string Day)>;
+    var calendar = ViewBag.CalendarData as AuthMvcApp.Models.CalendarData;
+    var monthProgress = ViewBag.MonthProgress as AuthMvcApp.Models.ProgressData;
+    var yearProgress = ViewBag.YearProgress as AuthMvcApp.Models.ProgressData;
+    var currentView = ViewBag.CurrentView as string ?? "week";
+}
+
+<div class="habit-container">
+    <!-- Header -->
+    <div class="habit-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h3 class="fw-bold"><span class="me-2">🎯</span>Habit Tracker</h3>
+                <p class="text-muted mb-0">Build better habits, one day at a time</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Create" class="btn btn-add-habit">
+                    <i class="bi bi-plus-lg me-1"></i>Add Habit
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model.Any())
+    {
+        <!-- View Tabs -->
+        <div class="view-tabs mb-4">
+            <a asp-action="Index" asp-route-view="week" class="tab-btn @(currentView == "week" ? "active" : "")">📅 Week</a>
+            <a asp-action="Index" asp-route-view="month" class="tab-btn @(currentView == "month" ? "active" : "")">📆 Month</a>
+            <a asp-action="Index" asp-route-view="year" class="tab-btn @(currentView == "year" ? "active" : "")">📊 Year</a>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="summary-card">
+                    <span class="summary-icon">🎯</span>
+                    <span class="summary-value">@Model.Count</span>
+                    <span class="summary-label">Total Habits</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="summary-card">
+                    <span class="summary-icon">✅</span>
+                    <span class="summary-value">@(habitStats?.Values.Sum(s => s.WeeklyStatus.Count(w => w.Value)) ?? 0)</span>
+                    <span class="summary-label">This Week</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="summary-card">
+                    <span class="summary-icon">🔥</span>
+                    <span class="summary-value">@(habitStats?.Values.Max(s => s.CurrentStreak) ?? 0)</span>
+                    <span class="summary-label">Best Streak</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="summary-card">
+                    <span class="summary-icon">📊</span>
+                    <span class="summary-value">@(habitStats?.Values.Any() == true ? habitStats.Values.Average(s => s.CompletionRate).ToString("F0") : "0")%</span>
+                    <span class="summary-label">Avg Rate</span>
+                </div>
+            </div>
+        </div>
+
+        @if (currentView == "week")
+        {
+            <!-- Week View -->
+            <div class="week-header mb-3">
+                <div class="row align-items-center">
+                    <div class="col-5 col-md-4"><span class="fw-bold">Habit</span></div>
+                    <div class="col-7 col-md-5">
+                        <div class="d-flex justify-content-between week-days">
+                            @foreach (var day in weekDays)
+                            {
+                                <div class="day-col @(day.Date == today ? "today" : "")">
+                                    <span class="day-name">@day.Day</span>
+                                    <span class="day-date">@DateTime.Parse(day.Date).Day</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-none d-md-block text-center"><span class="fw-bold">Streak</span></div>
+                </div>
+            </div>
+
+            @foreach (var habit in Model)
+            {
+                var stats = habitStats?[habit.Id];
+                <div class="habit-card mb-3" style="border-left: 4px solid @habit.Color;">
+                    <div class="row align-items-center">
+                        <div class="col-5 col-md-4">
+                            <div class="habit-info">
+                                <span class="habit-icon">@habit.Icon</span>
+                                <div>
+                                    <span class="habit-name">@habit.Name</span>
+                                    @if (stats?.CurrentStreak > 0)
+                                    {
+                                        <span class="streak-badge">🔥 @stats.CurrentStreak</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-7 col-md-5">
+                            <div class="d-flex justify-content-between week-checks">
+                                @foreach (var day in weekDays)
+                                {
+                                    var isCompleted = stats?.WeeklyStatus.GetValueOrDefault(day.Date) ?? false;
+                                    <form asp-action="Toggle" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@habit.Id" />
+                                        <input type="hidden" name="date" value="@day.Date" />
+                                        <button type="submit" class="check-btn @(isCompleted ? "completed" : "") @(day.Date == today ? "today" : "")">
+                                            @(isCompleted ? "✅" : "⬜")
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-3 d-none d-md-block">
+                            <div class="habit-stats text-center">
+                                <span class="stat-item">🔥 @(stats?.CurrentStreak ?? 0)</span>
+                                <span class="stat-item">🏆 @(stats?.BestStreak ?? 0)</span>
+                                <span class="stat-item">📊 @(stats?.CompletionRate ?? 0)%</span>
+                                <div class="habit-actions mt-2">
+                                    <a asp-action="Edit" asp-route-id="@habit.Id" class="btn btn-sm btn-icon">✏️</a>
+                                    <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Delete?')">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@habit.Id" />
+                                        <button type="submit" class="btn btn-sm btn-icon">🗑️</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else if (currentView == "month")
+        {
+            <!-- Month View - Calendar -->
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="calendar-card">
+                        <h5 class="text-center mb-3">📅 @calendar.MonthName</h5>
+                        <div class="calendar-grid">
+                            <div class="cal-header">Sun</div>
+                            <div class="cal-header">Mon</div>
+                            <div class="cal-header">Tue</div>
+                            <div class="cal-header">Wed</div>
+                            <div class="cal-header">Thu</div>
+                            <div class="cal-header">Fri</div>
+                            <div class="cal-header">Sat</div>
+                            
+                            @for (int i = 0; i < calendar.FirstDayOfWeek; i++)
+                            {
+                                <div class="cal-day empty"></div>
+                            }
+                            
+                            @for (int day = 1; day <= calendar.TotalDays; day++)
+                            {
+                                var status = calendar.DayStatus.GetValueOrDefault(day);
+                                var isToday = day == DateTime.Today.Day && calendar.Month == DateTime.Today.Month;
+                                <div class="cal-day status-@status @(isToday ? "today" : "")">
+                                    @day
+                                </div>
+                            }
+                        </div>
+                        <div class="calendar-legend mt-3">
+                            <span><span class="legend-dot status-0"></span> None</span>
+                            <span><span class="legend-dot status-1"></span> Partial</span>
+                            <span><span class="legend-dot status-2"></span> Complete</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="progress-card">
+                        <h5 class="text-center mb-3">📊 Last 30 Days Progress</h5>
+                        <div class="progress-bars">
+                            @for (int i = 0; i < monthProgress.Labels.Count; i++)
+                            {
+                                <div class="progress-bar-item">
+                                    <div class="bar-fill" style="height: @(monthProgress.Values[i])%;"></div>
+                                    <span class="bar-label">@monthProgress.Labels[i]</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (currentView == "year")
+        {
+            <!-- Year View -->
+            <div class="year-card">
+                <h5 class="text-center mb-4">📊 Last 12 Months Progress</h5>
+                <div class="year-chart">
+                    @for (int i = 0; i < yearProgress.Labels.Count; i++)
+                    {
+                        <div class="month-bar">
+                            <div class="month-fill" style="height: @(yearProgress.Values[i])%;"></div>
+                            <span class="month-value">@(yearProgress.Values[i])%</span>
+                            <span class="month-label">@yearProgress.Labels[i]</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <span style="font-size: 5rem;">🎯</span>
+            <h4 class="mt-3">No habits yet</h4>
+            <p class="text-muted">Start building better habits today!</p>
+            <a asp-action="Create" class="btn btn-add-habit">Add Your First Habit</a>
+        </div>
+    }
+</div>
+
+<style>
+    .habit-container { padding: 20px; }
+    .btn-add-habit { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 25px; padding: 10px 25px; font-weight: 600; }
+    .btn-add-habit:hover { color: white; }
+    
+    .view-tabs { display: flex; gap: 10px; }
+    .tab-btn { padding: 10px 20px; border-radius: 25px; background: #f0f0f0; color: #333; text-decoration: none; font-weight: 500; }
+    .tab-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    
+    .summary-card { background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+    .summary-icon { font-size: 2rem; }
+    .summary-value { font-size: 1.8rem; font-weight: 700; }
+    .summary-label { font-size: 0.85rem; color: #888; }
+    
+    .week-header { background: #f8f9fa; padding: 15px 20px; border-radius: 10px; }
+    .day-col { text-align: center; width: 40px; }
+    .day-col.today { background: #667eea; color: white; border-radius: 8px; padding: 5px; }
+    .day-name { display: block; font-size: 0.75rem; font-weight: 600; }
+    .day-date { display: block; font-size: 0.85rem; }
+    
+    .habit-card { background: white; border-radius: 15px; padding: 15px 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+    .habit-info { display: flex; align-items: center; gap: 12px; }
+    .habit-icon { font-size: 2rem; }
+    .habit-name { font-weight: 600; display: block; }
+    .streak-badge { background: #fff3cd; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; }
+    .check-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; padding: 5px; border-radius: 8px; }
+    .check-btn:hover { transform: scale(1.2); }
+    .check-btn.today { background: rgba(102,126,234,0.1); }
+    .stat-item { display: inline-block; margin: 0 5px; font-size: 0.85rem; }
+    .btn-icon { background: none; border: none; font-size: 1rem; padding: 5px; }
+    
+    /* Calendar */
+    .calendar-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+    .cal-header { text-align: center; font-weight: 600; font-size: 0.8rem; color: #888; padding: 10px 0; }
+    .cal-day { text-align: center; padding: 12px 8px; border-radius: 8px; font-size: 0.9rem; }
+    .cal-day.empty { background: transparent; }
+    .cal-day.status-0 { background: #f0f0f0; color: #999; }
+    .cal-day.status-1 { background: #ffeaa7; color: #333; }
+    .cal-day.status-2 { background: #00b894; color: white; }
+    .cal-day.today { border: 2px solid #667eea; font-weight: 700; }
+    .calendar-legend { display: flex; justify-content: center; gap: 20px; font-size: 0.85rem; }
+    .legend-dot { display: inline-block; width: 15px; height: 15px; border-radius: 4px; margin-right: 5px; vertical-align: middle; }
+    .legend-dot.status-0 { background: #f0f0f0; }
+    .legend-dot.status-1 { background: #ffeaa7; }
+    .legend-dot.status-2 { background: #00b894; }
+    
+    /* Progress Bars */
+    .progress-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); height: 100%; }
+    .progress-bars { display: flex; align-items: flex-end; justify-content: space-between; height: 200px; padding: 0 5px; }
+    .progress-bar-item { display: flex; flex-direction: column; align-items: center; width: 10px; height: 100%; }
+    .bar-fill { width: 100%; background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); border-radius: 3px 3px 0 0; min-height: 2px; }
+    .bar-label { font-size: 0.6rem; color: #888; margin-top: 5px; }
+    
+    /* Year Chart */
+    .year-card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+    .year-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 250px; }
+    .month-bar { display: flex; flex-direction: column; align-items: center; width: 50px; height: 100%; }
+    .month-fill { width: 35px; background: linear-gradient(180deg, #00b894 0%, #00cec9 100%); border-radius: 5px 5px 0 0; min-height: 5px; }
+    .month-value { font-size: 0.75rem; font-weight: 600; margin-top: 5px; }
+    .month-label { font-size: 0.8rem; color: #888; margin-top: 5px; }
+</style>
