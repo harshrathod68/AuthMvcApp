@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using AuthMvcApp.Services;
-using AuthMvcApp.Models;
+using MyApps.Services;
+using MyApps.Models;
 
-namespace AuthMvcApp.Controllers
+namespace MyApps.Controllers
 {
     /// <summary>
     /// Controller for user data management
@@ -14,6 +14,7 @@ namespace AuthMvcApp.Controllers
         private readonly IUserDataService _userDataService;
         private readonly IOtpService _otpService;
         private readonly IEmailService _emailService;
+        private readonly IAccessLogService _accessLogService;
         private readonly ILogger<UserController> _logger;
 
         /// <summary>
@@ -23,18 +24,20 @@ namespace AuthMvcApp.Controllers
             IUserDataService userDataService, 
             IOtpService otpService,
             IEmailService emailService,
+            IAccessLogService accessLogService,
             ILogger<UserController> logger)
         {
             _userDataService = userDataService;
             _otpService = otpService;
             _emailService = emailService;
+            _accessLogService = accessLogService;
             _logger = logger;
         }
 
         #region List Users
 
         /// <summary>
-        /// Displays the list of all verified users
+        /// Displays the list of all verified users (Admin only)
         /// </summary>
         public IActionResult Index()
         {
@@ -43,13 +46,23 @@ namespace AuthMvcApp.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Only show verified users
+            // Check if user is Admin
+            var userRole = HttpContext.Session.GetString("UserRole");
+            if (userRole != "Admin")
+            {
+                TempData["Error"] = "Access Denied! Only Admin users can access Users page.";
+                return RedirectToAction("Index", "Dashboard");
+            }
+
+            // Admin: Show all verified users from userdata.json
             var users = _userDataService.GetAllUsers()
                 .Where(u => u.IsVerified)
                 .OrderByDescending(u => u.CreatedAt)
                 .ToList();
             
             ViewBag.UserName = HttpContext.Session.GetString("UserName");
+            ViewBag.UserRole = userRole;
+            ViewBag.IsAdmin = true;
             return View(users);
         }
 
@@ -109,6 +122,7 @@ namespace AuthMvcApp.Controllers
                     Name = model.Name,
                     Email = model.Email,
                     Password = model.Password,
+                    Role = model.Role, // Save selected role
                     City = model.City,
                     Otp = otp,
                     OtpExpiry = DateTime.Now.AddMinutes(_otpService.GetExpiryMinutes()),
@@ -376,9 +390,9 @@ namespace AuthMvcApp.Controllers
         #region View User Details
 
         /// <summary>
-        /// Displays user details
+        /// Displays user details with login history
         /// </summary>
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             if (!IsAuthenticated())
             {
@@ -393,7 +407,22 @@ namespace AuthMvcApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            // Get user's login history
+            var allLogs = await _accessLogService.GetDailyAccessSummaryAsync();
+            var userLogs = allLogs
+                .Where(log => log.AccessLogs.Any(l => l.UserEmail == user.Email))
+                .Select(log => new
+                {
+                    Date = log.Date,
+                    Count = log.AccessLogs.Count(l => l.UserEmail == user.Email),
+                    Logs = log.AccessLogs.Where(l => l.UserEmail == user.Email).ToList()
+                })
+                .ToList();
+
             ViewBag.UserName = HttpContext.Session.GetString("UserName");
+            ViewBag.LoginHistory = userLogs;
+            ViewBag.TotalLogins = userLogs.Sum(l => l.Count);
+            
             return View(user);
         }
 
@@ -443,6 +472,59 @@ namespace AuthMvcApp.Controllers
         private bool IsAuthenticated()
         {
             return !string.IsNullOrEmpty(HttpContext.Session.GetString("UserId"));
+        }
+
+        #endregion
+
+        #region My Profile (For Normal Users)
+
+        /// <summary>
+        /// Shows current user's own profile
+        /// </summary>
+        [HttpGet]
+        public IActionResult MyProfile()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+            var userName = HttpContext.Session.GetString("UserName");
+            var userRole = HttpContext.Session.GetString("UserRole") ?? "User";
+
+            ViewBag.UserEmail = userEmail;
+            ViewBag.UserName = userName;
+            ViewBag.UserRole = userRole;
+
+            return View();
+        }
+
+        #endregion
+
+        #region Access History
+
+        /// <summary>
+        /// Display user access history (Admin only)
+        /// Shows daily access logs with count
+        /// </summary>
+        public async Task<IActionResult> History()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Check if user is Admin
+            var userRole = HttpContext.Session.GetString("UserRole");
+            if (userRole != "Admin")
+            {
+                TempData["Error"] = "Access Denied! Only Admin users can view access history.";
+                return RedirectToAction("Index", "Dashboard");
+            }
+
+            var dailySummary = await _accessLogService.GetDailyAccessSummaryAsync();
+            return View(dailySummary);
         }
 
         #endregion

@@ -1,12 +1,12 @@
-@model List<AuthMvcApp.Models.HabitModel>
+@model List<MyApps.Models.HabitModel>
 @{
     ViewData["Title"] = "Habit Tracker";
-    var habitStats = ViewBag.HabitStats as Dictionary<int, AuthMvcApp.Models.HabitStats>;
+    var habitStats = ViewBag.HabitStats as Dictionary<int, MyApps.Models.HabitStats>;
     var today = ViewBag.Today as string;
     var weekDays = ViewBag.WeekDays as List<(string Date, string Day)>;
-    var calendar = ViewBag.CalendarData as AuthMvcApp.Models.CalendarData;
-    var monthProgress = ViewBag.MonthProgress as AuthMvcApp.Models.ProgressData;
-    var yearProgress = ViewBag.YearProgress as AuthMvcApp.Models.ProgressData;
+    var calendar = ViewBag.CalendarData as MyApps.Models.CalendarData;
+    var monthProgress = ViewBag.MonthProgress as MyApps.Models.ProgressData;
+    var yearProgress = ViewBag.YearProgress as MyApps.Models.ProgressData;
     var currentView = ViewBag.CurrentView as string ?? "week";
 }
 
@@ -230,6 +230,13 @@
     }
 </div>
 
+<!-- Back Button at Bottom -->
+<div class="text-center mt-4 mb-4">
+    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-back">
+        <i class="bi bi-arrow-left me-2"></i>← Back to Dashboard
+    </a>
+</div>
+
 <style>
     .habit-container { padding: 20px; }
     .btn-add-habit { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 25px; padding: 10px 25px; font-weight: 600; }
@@ -240,55 +247,72 @@
     .tab-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
     
     .summary-card { background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+    [data-theme="dark"] .summary-card { background: #2d2d2d; color: #ffffff; }
     .summary-icon { font-size: 2rem; }
-    .summary-value { font-size: 1.8rem; font-weight: 700; }
+    .summary-value { font-size: 1.8rem; font-weight: 700; color: inherit; }
     .summary-label { font-size: 0.85rem; color: #888; }
+    [data-theme="dark"] .summary-label { color: #aaaaaa; }
     
     .week-header { background: #f8f9fa; padding: 15px 20px; border-radius: 10px; }
-    .day-col { text-align: center; width: 40px; }
+    [data-theme="dark"] .week-header { background: #2d2d2d; color: #ffffff; }
+    .day-col { text-align: center; width: 40px; color: inherit; }
     .day-col.today { background: #667eea; color: white; border-radius: 8px; padding: 5px; }
-    .day-name { display: block; font-size: 0.75rem; font-weight: 600; }
-    .day-date { display: block; font-size: 0.85rem; }
+    .day-name { display: block; font-size: 0.75rem; font-weight: 600; color: inherit; }
+    .day-date { display: block; font-size: 0.85rem; color: inherit; }
     
     .habit-card { background: white; border-radius: 15px; padding: 15px 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
-    .habit-info { display: flex; align-items: center; gap: 12px; }
+    [data-theme="dark"] .habit-card { background: #2d2d2d; color: #ffffff; }
+    .habit-info { display: flex; align-items: center; gap: 12px; color: inherit; }
     .habit-icon { font-size: 2rem; }
-    .habit-name { font-weight: 600; display: block; }
-    .streak-badge { background: #fff3cd; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; }
+    .habit-name { font-weight: 600; display: block; color: inherit; }
+    .streak-badge { background: #fff3cd; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; color: #333; }
+    [data-theme="dark"] .streak-badge { background: #5a4a1a; color: #ffdd99; }
     .check-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; padding: 5px; border-radius: 8px; }
     .check-btn:hover { transform: scale(1.2); }
     .check-btn.today { background: rgba(102,126,234,0.1); }
-    .stat-item { display: inline-block; margin: 0 5px; font-size: 0.85rem; }
+    .stat-item { display: inline-block; margin: 0 5px; font-size: 0.85rem; color: inherit; }
     .btn-icon { background: none; border: none; font-size: 1rem; padding: 5px; }
     
     /* Calendar */
     .calendar-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+    [data-theme="dark"] .calendar-card { background: #2d2d2d; color: #ffffff; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
     .cal-header { text-align: center; font-weight: 600; font-size: 0.8rem; color: #888; padding: 10px 0; }
-    .cal-day { text-align: center; padding: 12px 8px; border-radius: 8px; font-size: 0.9rem; }
+    [data-theme="dark"] .cal-header { color: #aaaaaa; }
+    .cal-day { text-align: center; padding: 12px 8px; border-radius: 8px; font-size: 0.9rem; color: inherit; }
     .cal-day.empty { background: transparent; }
     .cal-day.status-0 { background: #f0f0f0; color: #999; }
+    [data-theme="dark"] .cal-day.status-0 { background: #3a3a3a; color: #888888; }
     .cal-day.status-1 { background: #ffeaa7; color: #333; }
+    [data-theme="dark"] .cal-day.status-1 { background: #5a4a1a; color: #ffdd99; }
     .cal-day.status-2 { background: #00b894; color: white; }
+    [data-theme="dark"] .cal-day.status-2 { background: #1a5a3a; color: #88ff99; }
     .cal-day.today { border: 2px solid #667eea; font-weight: 700; }
-    .calendar-legend { display: flex; justify-content: center; gap: 20px; font-size: 0.85rem; }
+    .calendar-legend { display: flex; justify-content: center; gap: 20px; font-size: 0.85rem; color: inherit; }
     .legend-dot { display: inline-block; width: 15px; height: 15px; border-radius: 4px; margin-right: 5px; vertical-align: middle; }
     .legend-dot.status-0 { background: #f0f0f0; }
+    [data-theme="dark"] .legend-dot.status-0 { background: #3a3a3a; }
     .legend-dot.status-1 { background: #ffeaa7; }
+    [data-theme="dark"] .legend-dot.status-1 { background: #5a4a1a; }
     .legend-dot.status-2 { background: #00b894; }
+    [data-theme="dark"] .legend-dot.status-2 { background: #1a5a3a; }
     
     /* Progress Bars */
     .progress-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); height: 100%; }
+    [data-theme="dark"] .progress-card { background: #2d2d2d; color: #ffffff; }
     .progress-bars { display: flex; align-items: flex-end; justify-content: space-between; height: 200px; padding: 0 5px; }
     .progress-bar-item { display: flex; flex-direction: column; align-items: center; width: 10px; height: 100%; }
     .bar-fill { width: 100%; background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); border-radius: 3px 3px 0 0; min-height: 2px; }
     .bar-label { font-size: 0.6rem; color: #888; margin-top: 5px; }
+    [data-theme="dark"] .bar-label { color: #aaaaaa; }
     
     /* Year Chart */
     .year-card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+    [data-theme="dark"] .year-card { background: #2d2d2d; color: #ffffff; }
     .year-chart { display: flex; align-items: flex-end; justify-content: space-around; height: 250px; }
     .month-bar { display: flex; flex-direction: column; align-items: center; width: 50px; height: 100%; }
     .month-fill { width: 35px; background: linear-gradient(180deg, #00b894 0%, #00cec9 100%); border-radius: 5px 5px 0 0; min-height: 5px; }
-    .month-value { font-size: 0.75rem; font-weight: 600; margin-top: 5px; }
+    .month-value { font-size: 0.75rem; font-weight: 600; margin-top: 5px; color: inherit; }
     .month-label { font-size: 0.8rem; color: #888; margin-top: 5px; }
+    [data-theme="dark"] .month-label { color: #aaaaaa; }
 </style>

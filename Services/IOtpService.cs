@@ -1,4 +1,4 @@
-namespace AuthMvcApp.Services
+namespace MyApps.Services
 {
     public interface IOtpService
     {

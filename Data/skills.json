@@ -1,0 +1,25 @@
+[
+  {
+    "Id": 1,
+    "SkillName": "Content Creation",
+    "TotalDays": 90,
+    "DailyMinutes": 120,
+    "StartDate": "2026-02-14T00:00:00",
+    "GoalLevel": "Beginner",
+    "UserEmail": "modiharsh949@gmail.com",
+    "CreatedAt": "2026-02-13T16:15:18.0166102+05:30",
+    "CompletedDays": 0,
+    "MissedDays": 0,
+    "CurrentStreak": 0,
+    "LongestStreak": 0,
+    "TotalMinutesSpent": 0,
+    "ProgressPercentage": 0,
+    "ConsistencyScore": 0,
+    "RemainingDays": 90,
+    "DaysPassed": 0,
+    "ExpectedEndDate": "2026-05-15T00:00:00",
+    "IsCompleted": false,
+    "IsActive": false,
+    "Stages": []
+  }
+]

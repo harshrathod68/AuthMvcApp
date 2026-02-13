@@ -1,0 +1,22 @@
+[
+  {
+    "Id": 1,
+    "UserId": "ADD-3",
+    "WorkName": "coding ",
+    "Date": "2026-01-29T00:00:00",
+    "StartTime": "11:55:00",
+    "EndTime": "13:30:00",
+    "TotalTime": "01:35:00",
+    "CreatedDate": "2026-01-29T11:56:17.3802809+05:30"
+  },
+  {
+    "Id": 2,
+    "UserId": "ADD-3",
+    "WorkName": "meeting",
+    "Date": "2026-01-30T00:00:00",
+    "StartTime": "13:30:00",
+    "EndTime": "14:20:00",
+    "TotalTime": "00:50:00",
+    "CreatedDate": "2026-01-30T17:25:26.4307891+05:30"
+  }
+]

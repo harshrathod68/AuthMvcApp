@@ -1,0 +1,292 @@
+@model TranslatorModel
+
+@{
+    ViewData["Title"] = "Language Translator";
+    var languages = ViewBag.Languages as List<LanguageInfo>;
+}
+
+<div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h2>🌐 Language Translator</h2>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card" style="margin-bottom: 30px;">
+        <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h4 style="margin: 0; color: white;">Translate Text Between Languages</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="post" class="translator-form">
+                <!-- Language Selection Row -->
+                <div class="row mb-4">
+                    <!-- Source Language -->
+                    <div class="col-md-5">
+                        <label class="form-label">From Language</label>
+                        <select name="SourceLanguage" class="form-select" required>
+                            @foreach (var lang in languages)
+                            {
+                                <option value="@lang.Code" selected="@(Model.SourceLanguage == lang.Code)">
+                                    @lang.Flag @lang.Name
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Swap Button -->
+                    <div class="col-md-2 d-flex align-items-end justify-content-center">
+                        <button type="button" class="btn btn-outline-secondary" onclick="swapLanguages()" title="Swap languages">
+                            ⇄ Swap
+                        </button>
+                    </div>
+
+                    <!-- Target Language -->
+                    <div class="col-md-5">
+                        <label class="form-label">To Language</label>
+                        <select name="TargetLanguage" class="form-select" required>
+                            @foreach (var lang in languages)
+                            {
+                                <option value="@lang.Code" selected="@(Model.TargetLanguage == lang.Code)">
+                                    @lang.Flag @lang.Name
+                                </option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Text Input Row -->
+                <div class="row mb-4">
+                    <!-- Source Text -->
+                    <div class="col-md-6">
+                        <label class="form-label">Text to Translate</label>
+                        <textarea name="SourceText" class="form-control translator-textarea" 
+                                  placeholder="Enter text here..." rows="6" required>@Model.SourceText</textarea>
+                        <small class="text-muted">
+                            <span id="charCount">0</span> / 5000 characters
+                        </small>
+                    </div>
+
+                    <!-- Translated Text -->
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            Translated Text 
+                            <span class="badge bg-success" id="liveIndicator" style="display: none;">⚡ Live</span>
+                        </label>
+                        <textarea class="form-control translator-textarea" 
+                                  placeholder="Translation will appear here automatically..." rows="6" readonly>@Model.TranslatedText</textarea>
+                        @if (!string.IsNullOrEmpty(Model.TranslatedText))
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="copyToClipboard()">
+                                📋 Copy Translation
+                            </button>
+                        }
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="copyToClipboard()" id="copyBtn" style="display: none;">
+                            📋 Copy Translation
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                @if (!string.IsNullOrEmpty(ViewBag.Error))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error!</strong> @ViewBag.Error
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <!-- Translate Button -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        🚀 Translate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Features Info -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">🌍 40+ Languages</h5>
+                    <p class="card-text">Support for major languages worldwide</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">⚡ Instant Translation</h5>
+                    <p class="card-text">Fast and accurate translations</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">📋 Easy Copy</h5>
+                    <p class="card-text">Copy translations with one click</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center mb-4">
+        <a href="@Url.Action("Index", "Dashboard")" class="btn btn-back">
+            ← Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    let translationTimeout;
+    let isTranslating = false;
+
+    // Live translation on typing
+    document.querySelector('textarea[name="SourceText"]').addEventListener('input', function() {
+        const charCount = this.value.length;
+        document.getElementById('charCount').textContent = charCount;
+        
+        // Clear previous timeout
+        clearTimeout(translationTimeout);
+        
+        // Only translate if text is not empty
+        if (this.value.trim().length > 0) {
+            // Wait 1 second after user stops typing
+            translationTimeout = setTimeout(() => {
+                translateLive();
+            }, 1000);
+        } else {
+            // Clear translation if text is empty
+            document.querySelectorAll('.translator-textarea')[1].value = '';
+        }
+    });
+
+    // Live translation function
+    async function translateLive() {
+        if (isTranslating) return;
+        
+        const sourceText = document.querySelector('textarea[name="SourceText"]').value.trim();
+        const sourceLanguage = document.querySelector('select[name="SourceLanguage"]').value;
+        const targetLanguage = document.querySelector('select[name="TargetLanguage"]').value;
+        const outputTextarea = document.querySelectorAll('.translator-textarea')[1];
+        const liveIndicator = document.getElementById('liveIndicator');
+        const copyBtn = document.getElementById('copyBtn');
+        
+        if (!sourceText) return;
+        
+        if (sourceLanguage === targetLanguage) {
+            outputTextarea.value = 'Please select different languages';
+            liveIndicator.style.display = 'none';
+            copyBtn.style.display = 'none';
+            return;
+        }
+        
+        isTranslating = true;
+        outputTextarea.value = 'Translating...';
+        liveIndicator.style.display = 'inline-block';
+        copyBtn.style.display = 'none';
+        
+        try {
+            const response = await fetch('@Url.Action("TranslateText", "Dashboard")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    sourceText: sourceText,
+                    sourceLanguage: sourceLanguage,
+                    targetLanguage: targetLanguage
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                outputTextarea.value = data.translatedText;
+                copyBtn.style.display = 'inline-block';
+            } else {
+                outputTextarea.value = 'Translation failed: ' + (data.error || 'Unknown error');
+            }
+        } catch (error) {
+            outputTextarea.value = 'Error: ' + error.message;
+        } finally {
+            isTranslating = false;
+        }
+    }
+
+    // Trigger translation when language changes
+    document.querySelector('select[name="SourceLanguage"]').addEventListener('change', function() {
+        if (document.querySelector('textarea[name="SourceText"]').value.trim()) {
+            clearTimeout(translationTimeout);
+            translateLive();
+        }
+    });
+
+    document.querySelector('select[name="TargetLanguage"]').addEventListener('change', function() {
+        if (document.querySelector('textarea[name="SourceText"]').value.trim()) {
+            clearTimeout(translationTimeout);
+            translateLive();
+        }
+    });
+
+    // Character counter
+    document.querySelector('textarea[name="SourceText"]').addEventListener('input', function() {
+        document.getElementById('charCount').textContent = this.value.length;
+    });
+
+    // Swap languages
+    function swapLanguages() {
+        const sourceSelect = document.querySelector('select[name="SourceLanguage"]');
+        const targetSelect = document.querySelector('select[name="TargetLanguage"]');
+        const sourceTextarea = document.querySelector('textarea[name="SourceText"]');
+        const targetTextarea = document.querySelectorAll('.translator-textarea')[1];
+        
+        // Swap language selections
+        const temp = sourceSelect.value;
+        sourceSelect.value = targetSelect.value;
+        targetSelect.value = temp;
+        
+        // Swap text content
+        const tempText = sourceTextarea.value;
+        sourceTextarea.value = targetTextarea.value;
+        targetTextarea.value = tempText;
+        
+        // Update character count
+        document.getElementById('charCount').textContent = sourceTextarea.value.length;
+        
+        // Trigger translation if there's text
+        if (sourceTextarea.value.trim()) {
+            clearTimeout(translationTimeout);
+            translateLive();
+        }
+    }
+
+    // Copy to clipboard
+    function copyToClipboard() {
+        const textarea = document.querySelectorAll('.translator-textarea')[1];
+        textarea.select();
+        document.execCommand('copy');
+        
+        // Show feedback
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {
+            btn.textContent = originalText;
+        }, 2000);
+    }
+
+    // Initialize character count
+    document.getElementById('charCount').textContent = document.querySelector('textarea[name="SourceText"]').value.length;
+    
+    // Trigger initial translation if there's text
+    if (document.querySelector('textarea[name="SourceText"]').value.trim()) {
+        translateLive();
+    }
+</script>

@@ -14,7 +14,7 @@
  * =====================================================
  */
 
-using AuthMvcApp.Services;
+using MyApps.Services;
 
 // ===== STEP 1: Builder Create =====
 // WebApplication builder banao
@@ -44,6 +44,24 @@ builder.Services.AddHttpClient<IWeatherService, WeatherService>();   // Weather 
 builder.Services.AddHttpClient<ICurrencyService, CurrencyService>(); // Currency API
 builder.Services.AddHttpClient<ICountryService, CountryService>();   // Country API
 builder.Services.AddHttpClient<INewsService, NewsService>();         // News API
+builder.Services.AddHttpClient<ITranslatorService, TranslatorService>(); // Translator API
+builder.Services.AddHttpClient<IEmergencyService, EmergencyService>(); // Emergency Numbers API
+builder.Services.AddHttpClient<IHolidayService, HolidayService>(); // Public Holidays API
+
+// ----- Time Track Service -----
+builder.Services.AddSingleton<ITimeTrackService, TimeTrackService>();
+
+// ----- Access Log Service -----
+builder.Services.AddSingleton<IAccessLogService, AccessLogService>();
+
+// ----- Role Permission Service -----
+builder.Services.AddSingleton<IRolePermissionService, RolePermissionService>();
+
+// ----- Skill Tracker Service (Skill Mastery Tracker) -----
+builder.Services.AddSingleton<ISkillTrackerService, SkillTrackerService>();
+
+// ----- PDF Converter Service -----
+builder.Services.AddScoped<IPdfConverterService, PdfConverterService>();
 
 // ----- Other Services -----
 builder.Services.AddSingleton<ITimeZoneService, TimeZoneService>();  // Time zone conversion
@@ -60,6 +78,19 @@ builder.Services.AddSession(options =>
     // Security settings
     options.Cookie.HttpOnly = true;      // JavaScript se access nahi ho sakta
     options.Cookie.IsEssential = true;   // GDPR ke liye zaroori
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // HTTPS preference
+});
+
+// ===== PERFORMANCE OPTIMIZATION =====
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true; // SEO friendly URLs
+});
+
+// Response compression for faster loading
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
 });
 
 // ===== STEP 4: Application Build =====
@@ -67,6 +98,9 @@ var app = builder.Build();
 
 // ===== STEP 5: Middleware Pipeline =====
 // Middleware = Request aur Response ke beech mein processing
+
+// Response compression (faster loading)
+app.UseResponseCompression();
 
 // Production mein error handling
 if (!app.Environment.IsDevelopment())
@@ -79,7 +113,15 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Static files serve karo (CSS, JS, images from wwwroot folder)
-app.UseStaticFiles();
+// Cache static files for better performance
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // Cache static files for 30 days
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=2592000");
+    }
+});
 
 // Routing enable karo
 app.UseRouting();

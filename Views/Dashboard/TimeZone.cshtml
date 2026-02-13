@@ -1,5 +1,5 @@
-@model AuthMvcApp.Models.TimeZoneConversionModel
-@using AuthMvcApp.Models
+@model MyApps.Models.TimeZoneConversionModel
+@using MyApps.Models
 @{
     ViewData["Title"] = "Time Conversion";
     var result = ViewBag.Result as TimeZoneResultModel;
@@ -320,6 +320,11 @@
         border-radius: 25px;
         background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
         color: white;
+    }
+
+    [data-theme="dark"] .result-card {
+        background: linear-gradient(135deg, #5a3a1a 0%, #5a2a1a 100%);
+        color: #ffffff;
     }
 
     .result-card .card-body {

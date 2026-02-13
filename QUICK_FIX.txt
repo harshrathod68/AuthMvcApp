@@ -1,0 +1,42 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                    🔧 EMAIL ISSUE - QUICK FIX                        ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+❌ PROBLEM:
+   "Failed to send OTP email. Please check your email address..."
+   
+   Reason: Gmail App Password is invalid/expired
+
+✅ SOLUTION (5 Steps):
+
+   1️⃣  Open: https://myaccount.google.com/security
+       Login: rathodharshan534@gmail.com
+   
+   2️⃣  Enable "2-Step Verification" (if not enabled)
+   
+   3️⃣  Generate App Password:
+       - Search: "App Passwords"
+       - Or: https://myaccount.google.com/apppasswords
+       - Select: Mail → Other (Custom) → "MyApps"
+       - Click: Generate
+   
+   4️⃣  Copy 16-digit password (remove spaces!)
+       Example: abcd efgh ijkl mnop → abcdefghijklmnop
+   
+   5️⃣  Update appsettings.json:
+       "SmtpPass": "YOUR_NEW_16_DIGIT_PASSWORD"
+
+🔄 RESTART APP:
+   taskkill /F /IM MyApps.exe
+   dotnet build
+   dotnet run
+
+🧪 TEST EMAIL:
+   http://localhost:5019/Account/TestEmail
+
+📖 DETAILED GUIDE:
+   See: FIX_EMAIL_ISSUE.md
+
+╔══════════════════════════════════════════════════════════════════════╗
+║  After fixing, registration with OTP will work perfectly! ✨         ║
+╚══════════════════════════════════════════════════════════════════════╝

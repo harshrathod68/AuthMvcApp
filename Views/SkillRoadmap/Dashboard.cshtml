@@ -1,0 +1,470 @@
+@model MyApps.Models.SkillDashboardModel
+@{
+    ViewData["Title"] = "Skill Dashboard";
+    var skill = Model.Skill;
+    var motivationalMessage = ViewBag.MotivationalMessage as string ?? "";
+    var dailyReminder = ViewBag.DailyReminder as string ?? "";
+}
+
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-left h1 {
+        margin: 0;
+        font-size: 2.5rem;
+    }
+
+    .header-left p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+    }
+
+    .progress-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: conic-gradient(#38ef7d 0% @(skill.ProgressPercentage)%, rgba(255,255,255,0.2) @(skill.ProgressPercentage)% 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+        position: relative;
+    }
+
+    .progress-circle::before {
+        content: '';
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        background: #667eea;
+        border-radius: 50%;
+        z-index: 0;
+    }
+
+    .progress-circle span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-box {
+        background: var(--card-bg);
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--text-primary);
+        margin: 10px 0;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .motivation-box {
+        background: linear-gradient(135deg, #f5af19, #f12711);
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(245, 175, 25, 0.3);
+    }
+
+    .motivation-box h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.5rem;
+    }
+
+    .charts-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .chart-card {
+        background: var(--card-bg);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+    }
+
+    .chart-card h3 {
+        margin: 0 0 20px 0;
+        color: var(--text-primary);
+        font-size: 1.2rem;
+    }
+
+    .today-task {
+        background: var(--card-bg);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+        margin-bottom: 30px;
+    }
+
+    .task-form {
+        display: grid;
+        gap: 15px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+    }
+
+    .form-control {
+        padding: 12px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-size: 1rem;
+    }
+
+    .btn-complete {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+        color: white;
+        padding: 15px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-complete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+    }
+
+    .btn-complete:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .completed-badge {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .actions-row {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+    }
+
+    .btn-tasks {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #f5af19, #f12711);
+        color: white;
+    }
+
+    .btn-back {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border: 2px solid var(--border-color);
+    }
+
+    @@media (max-width: 768px) {
+        .charts-section {
+            grid-template-columns: 1fr;
+        }
+
+        .header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="dashboard-header">
+    <div class="header-content">
+        <div class="header-left">
+            <h1>🎯 @skill.SkillName</h1>
+            <p>@skill.GoalLevel Level • Started @skill.StartDate.ToString("MMM dd, yyyy")</p>
+            <p>@dailyReminder</p>
+        </div>
+        <div class="progress-circle">
+            <span>@skill.ProgressPercentage.ToString("F0")%</span>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(motivationalMessage))
+{
+    <div class="motivation-box">
+        <h3>@motivationalMessage</h3>
+        <p>Keep up the amazing work!</p>
+    </div>
+}
+
+<div class="stats-row">
+    <div class="stat-box">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">@skill.CompletedDays</div>
+        <div class="stat-label">Days Completed</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-icon">📅</div>
+        <div class="stat-value">@skill.RemainingDays</div>
+        <div class="stat-label">Days Remaining</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-value">@skill.CurrentStreak</div>
+        <div class="stat-label">Current Streak</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-value">@(skill.TotalMinutesSpent / 60)h</div>
+        <div class="stat-label">Total Time</div>
+    </div>
+</div>
+
+<div class="today-task">
+    <h2 style="margin: 0 0 20px 0; color: var(--text-primary);">📝 Today's Progress</h2>
+    
+    @if (Model.TodayProgress != null && Model.TodayProgress.IsCompleted)
+    {
+        <div class="completed-badge">
+            ✅ Today's task completed! Great job!
+        </div>
+        <p style="margin-top: 15px; color: var(--text-secondary);">
+            Time spent: @Model.TodayProgress.MinutesSpent minutes
+        </p>
+        @if (!string.IsNullOrEmpty(Model.TodayProgress.Notes))
+        {
+            <p style="margin-top: 10px; color: var(--text-secondary);">
+                Notes: @Model.TodayProgress.Notes
+            </p>
+        }
+    }
+    else
+    {
+        <form id="completeForm" class="task-form">
+            <div class="form-group">
+                <label class="form-label">Time Spent (minutes)</label>
+                <input type="number" id="minutesSpent" class="form-control" min="1" max="480" value="@skill.DailyMinutes" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notes (optional)</label>
+                <textarea id="notes" class="form-control" rows="3" placeholder="What did you learn today?"></textarea>
+            </div>
+            <button type="submit" class="btn-complete">
+                ✅ Mark Today as Complete
+            </button>
+        </form>
+    }
+</div>
+
+<div class="charts-section">
+    <div class="chart-card">
+        <h3>📈 Progress Over Time</h3>
+        <canvas id="progressChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>📊 Weekly Activity</h3>
+        <canvas id="weeklyChart"></canvas>
+    </div>
+</div>
+
+<div class="actions-row">
+    <a href="@Url.Action("Tasks", new { id = skill.Id })" class="btn-action btn-tasks">
+        📅 View All Days
+    </a>
+    <a href="@Url.Action("Edit", new { id = skill.Id })" class="btn-action btn-edit">
+        ✏️ Edit Skill
+    </a>
+    <a href="@Url.Action("Index")" class="btn-action btn-back">
+        ← Back to Skills
+    </a>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script>
+        // Complete form submission
+        document.getElementById('completeForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const minutesSpent = document.getElementById('minutesSpent').value;
+            const notes = document.getElementById('notes').value;
+            const btn = e.target.querySelector('button[type="submit"]');
+            
+            btn.disabled = true;
+            btn.textContent = '⏳ Saving...';
+            
+            try {
+                const response = await fetch('@Url.Action("MarkComplete")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `skillId=@skill.Id&date=@DateTime.Today.ToString("yyyy-MM-dd")&minutesSpent=${minutesSpent}&notes=${encodeURIComponent(notes)}`
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    location.reload();
+                } else {
+                    alert('Failed to mark complete. Please try again.');
+                    btn.disabled = false;
+                    btn.textContent = '✅ Mark Today as Complete';
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+                btn.disabled = false;
+                btn.textContent = '✅ Mark Today as Complete';
+            }
+        });
+
+        // Load chart data
+        async function loadCharts() {
+            try {
+                const response = await fetch('@Url.Action("GetChartData", new { id = skill.Id })');
+                const result = await response.json();
+                
+                if (result.success) {
+                    createProgressChart(result.data);
+                }
+
+                const weeklyResponse = await fetch('@Url.Action("GetChartData", new { id = skill.Id, type = "weekly" })');
+                const weeklyResult = await weeklyResponse.json();
+                
+                if (weeklyResult.success) {
+                    createWeeklyChart(weeklyResult.data);
+                }
+            } catch (error) {
+                console.error('Error loading charts:', error);
+            }
+        }
+
+        function createProgressChart(data) {
+            const ctx = document.getElementById('progressChart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Progress %',
+                        data: data.progressData,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function createWeeklyChart(data) {
+            const ctx = document.getElementById('weeklyChart');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Minutes',
+                        data: data.timeData,
+                        backgroundColor: '#11998e'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load charts on page load
+        loadCharts();
+    </script>
+}

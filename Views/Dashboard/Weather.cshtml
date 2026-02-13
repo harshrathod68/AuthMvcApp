@@ -1,7 +1,7 @@
-@model AuthMvcApp.Models.WeatherSearchModel
+@model MyApps.Models.WeatherSearchModel
 @{
     ViewData["Title"] = "Weather Details";
-    var weather = ViewBag.Weather as AuthMvcApp.Models.WeatherModel;
+    var weather = ViewBag.Weather as MyApps.Models.WeatherModel;
 }
 
 <div class="weather-container">
@@ -147,7 +147,7 @@
     }
 
     .search-form .input-group {
-        background: white;
+        background: var(--input-bg);
         border-radius: 15px;
         overflow: hidden;
     }
@@ -190,6 +190,11 @@
         color: #333;
     }
 
+    [data-theme="dark"] .weather-main-card {
+        background: linear-gradient(135deg, #2d5a5a 0%, #3d4a6a 100%);
+        color: #ffffff;
+    }
+
     .weather-main-card .card-body {
         padding: 35px;
     }
@@ -197,12 +202,14 @@
     .weather-location h2 {
         font-weight: 700;
         margin-bottom: 5px;
+        color: inherit;
     }
 
     .weather-desc {
         font-size: 0.95rem;
         opacity: 0.8;
         letter-spacing: 2px;
+        color: inherit;
     }
 
     .weather-temp {
@@ -239,9 +246,15 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        background: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.4);
         padding: 15px;
         border-radius: 15px;
+        color: #333; /* Keep dark text on semi-transparent white */
+    }
+
+    [data-theme="dark"] .detail-item {
+        background: rgba(0, 0, 0, 0.3);
+        color: #ffffff;
     }
 
     .detail-icon {
@@ -266,7 +279,7 @@
     .detail-card {
         border: none;
         border-radius: 20px;
-        background: white;
+        background: var(--card-bg);
         transition: all 0.3s ease;
     }
 
@@ -285,14 +298,14 @@
     }
 
     .detail-card h6 {
-        color: #666;
+        color: var(--text-muted);
         margin-bottom: 5px;
     }
 
     .detail-card-value {
         font-size: 1.3rem;
         font-weight: 700;
-        color: #333;
+        color: var(--text-primary);
         margin: 0;
     }
 

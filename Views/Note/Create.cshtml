@@ -1,4 +1,4 @@
-@model AuthMvcApp.Models.NoteCreateModel
+@model MyApps.Models.NoteCreateModel
 @{
     ViewData["Title"] = "Create Note";
 }
@@ -30,12 +30,12 @@
                             
                             <div class="col-md-4">
                                 <label asp-for="Category" class="form-label">Category</label>
-                                <select asp-for="Category" class="form-select" id="categorySelect">
-                                    <option value="text">📝 Text</option>
-                                    <option value="image">🖼️ Image</option>
-                                    <option value="link">🔗 Link</option>
-                                    <option value="todo">✅ Todo</option>
-                                    <option value="idea">💡 Idea</option>
+                                <select asp-for="Category" class="form-select" id="categorySelect" name="Category">
+                                    <option value="text" selected="@(Model.Category == "text" ? "selected" : null)">📝 Text</option>
+                                    <option value="image" selected="@(Model.Category == "image" ? "selected" : null)">🖼️ Image</option>
+                                    <option value="link" selected="@(Model.Category == "link" ? "selected" : null)">🔗 Link</option>
+                                    <option value="todo" selected="@(Model.Category == "todo" ? "selected" : null)">✅ Todo</option>
+                                    <option value="idea" selected="@(Model.Category == "idea" ? "selected" : null)">💡 Idea</option>
                                 </select>
                             </div>
                             
@@ -159,16 +159,28 @@
 
 @section Scripts {
     <script>
-        document.getElementById('categorySelect').addEventListener('change', function() {
+        var categorySelect = document.getElementById('categorySelect');
+        
+        categorySelect.addEventListener('change', function() {
             var cat = this.value;
             document.getElementById('contentSection').style.display = (cat === 'text' || cat === 'idea') ? 'block' : 'none';
             document.getElementById('imageSection').style.display = cat === 'image' ? 'block' : 'none';
             document.getElementById('linkSection').style.display = cat === 'link' ? 'block' : 'none';
             document.getElementById('todoSection').style.display = cat === 'todo' ? 'block' : 'none';
+            
+            // Update icon
+            var icons = {
+                'text': '📝',
+                'image': '🖼️',
+                'link': '🔗',
+                'todo': '✅',
+                'idea': '💡'
+            };
+            document.querySelector('.create-icon').textContent = icons[cat] || '📝';
         });
         
-        // Trigger on load
-        document.getElementById('categorySelect').dispatchEvent(new Event('change'));
+        // Trigger on load to show correct section
+        categorySelect.dispatchEvent(new Event('change'));
         
         var todoItems = [];
         
@@ -191,8 +203,14 @@
         }
         
         // Add first todo item if category is todo
-        if (document.getElementById('categorySelect').value === 'todo') {
+        if (categorySelect.value === 'todo') {
             addTodoItem();
         }
+        
+        // Before form submit, ensure category is set
+        document.querySelector('form').addEventListener('submit', function(e) {
+            console.log('Submitting with category:', categorySelect.value);
+            console.log('Form data:', new FormData(this));
+        });
     </script>
 }

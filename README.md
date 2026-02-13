@@ -1,81 +1,83 @@
-# AuthMvcApp - ASP.NET MVC Authentication with JSON Storage
+# MyApps - ASP.NET MVC Multi-Feature Dashboard
 
-## Project Structure
+## 🚀 Features
+
+- **User Authentication** - Register, Login, OTP Verification, Forgot Password
+- **Weather Details** - Search any city's weather using OpenWeatherMap API
+- **Currency Converter** - Convert between 150+ currencies
+- **Time Zone Converter** - Convert time between different time zones
+- **Country Information** - Get details about any country
+- **Latest News** - Read news from any country in multiple languages
+- **Notes App** - Create, edit, delete notes with categories (Text, Image, Link, Todo, Idea)
+- **Habit Tracker** - Track daily habits with streaks and progress charts
+
+## 📁 Project Structure
 
 ```
-AuthMvcApp/
+MyApps/
 ├── Controllers/
-│   ├── AccountController.cs    # Login, Register, Logout
-│   ├── AdminController.cs      # Admin Dashboard, Add/View Users
-│   └── UserController.cs       # User Dashboard
-├── Models/
-│   ├── UserModel.cs            # User entity model
-│   ├── LoginModel.cs           # Login form model
-│   └── RegisterModel.cs        # Registration form model
-├── Services/
-│   ├── IJsonDataService.cs     # Service interface
-│   └── JsonDataService.cs      # JSON file read/write operations
-├── Views/
-│   ├── Account/
-│   │   ├── Login.cshtml        # Login page
-│   │   └── Register.cshtml     # Registration page
-│   ├── Admin/
-│   │   ├── Index.cshtml        # Admin Dashboard (user list)
-│   │   ├── AddUser.cshtml      # Add new user form
-│   │   └── UserDetails.cshtml  # View user details
-│   ├── User/
-│   │   └── Index.cshtml        # User Dashboard (profile)
-│   └── Shared/
-│       └── _Layout.cshtml      # Main layout with navigation
-├── Data/
-│   ├── admin.json              # Admin accounts storage
-│   └── users.json              # User accounts storage
-└── Program.cs                  # App configuration with session setup
+│   ├── AccountController.cs    # Login, Register, Logout, OTP
+│   ├── DashboardController.cs  # Weather, Currency, TimeZone, Country, News
+│   ├── UserController.cs       # User CRUD operations
+│   ├── NoteController.cs       # Notes CRUD
+│   └── HabitController.cs      # Habit Tracker
+├── Models/                     # Data models
+├── Services/                   # Business logic & API calls
+├── Views/                      # Razor views (HTML pages)
+├── Data/                       # JSON data files
+│   ├── users.json              # Registered users
+│   ├── userdata.json           # Added users
+│   ├── notes.json              # User notes
+│   └── habits.json             # User habits
+└── wwwroot/                    # Static files (CSS, JS)
 ```
 
-## Authentication & Authorization Flow
+## 🔧 Configuration
 
-### Registration Flow
-1. User fills registration form with Name, Email, Password, Role
-2. System validates input and checks for duplicate email
-3. Based on role selection:
-   - Admin → saved to `Data/admin.json`
-   - User → saved to `Data/users.json`
-4. Redirect to login page
+Update `appsettings.json` with your API keys:
 
-### Login Flow
-1. User enters Email and Password
-2. System first checks `admin.json` for matching credentials
-3. If found → Set session as Admin → Redirect to Admin Dashboard
-4. If not found → Check `users.json`
-5. If found → Set session as User → Redirect to User Dashboard
-6. If not found → Show error message
+```json
+{
+  "EmailSettings": {
+    "SmtpHost": "smtp.gmail.com",
+    "SmtpPort": "587",
+    "SmtpUser": "your-email@gmail.com",
+    "SmtpPass": "your-gmail-app-password"
+  },
+  "WeatherApi": {
+    "ApiKey": "your-openweathermap-key"
+  },
+  "NewsApi": {
+    "ApiKey": "your-gnews-key"
+  }
+}
+```
 
-### Session Management
-- Session stores: UserId, UserName, UserEmail, UserRole
-- Session timeout: 30 minutes
-- Session cleared on logout
+### 📧 Email Setup (Important!)
 
-### Authorization
-- Admin pages check `UserRole == "Admin"` in session
-- User pages check for valid session and prevent admin access
-- Unauthenticated users redirected to login
+For OTP and password reset emails to work, you need a **Gmail App Password**:
 
-## Sample Credentials
+1. Go to: https://myaccount.google.com/security
+2. Enable **2-Step Verification**
+3. Generate **App Password** for "Mail"
+4. Copy the 16-digit password (remove spaces)
+5. Update `SmtpPass` in `appsettings.json`
 
-### Admin Account
-- Email: `admin@example.com`
-- Password: `Admin123`
+**📖 Detailed Guide**: See [FIX_EMAIL_ISSUE.md](FIX_EMAIL_ISSUE.md) for complete setup instructions.
 
-### User Accounts
-- Email: `john@example.com` | Password: `User123`
-- Email: `jane@example.com` | Password: `User123`
+**🧪 Test Email**: After setup, test at: `http://localhost:5019/Account/TestEmail`
 
-## Running the Application
+## 🚀 Running the Application
 
 ```bash
-cd AuthMvcApp
+cd MyApps
+dotnet build
 dotnet run
 ```
 
-Navigate to `https://localhost:5001` or `http://localhost:5000`
+Navigate to `http://localhost:5018`
+
+## 👨‍💻 Developer
+
+**Harsh Rathod**  
+GitHub: https://github.com/harshrathod68/HR-MyApps

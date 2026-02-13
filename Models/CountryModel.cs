@@ -1,4 +1,4 @@
-namespace AuthMvcApp.Models
+namespace MyApps.Models
 {
     /// <summary>
     /// Model for country search input

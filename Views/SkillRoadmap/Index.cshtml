@@ -1,0 +1,326 @@
+@model List<MyApps.Models.SkillMasteryModel>
+@{
+    ViewData["Title"] = "My Skills";
+    var stats = ViewBag.Stats as Dictionary<string, int> ?? new Dictionary<string, int>();
+}
+
+<style>
+    .skills-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+    }
+
+    .skill-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid var(--border-color);
+    }
+
+    .skill-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .skill-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+    }
+
+    .skill-name {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .skill-level {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .skill-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin: 20px 0;
+    }
+
+    .skill-stat {
+        text-align: center;
+    }
+
+    .skill-stat-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--text-primary);
+    }
+
+    .skill-stat-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 5px;
+    }
+
+    .progress-section {
+        margin: 20px 0;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .progress-bar-container {
+        height: 12px;
+        background: var(--bg-secondary);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #11998e, #38ef7d);
+        border-radius: 10px;
+        transition: width 0.5s ease;
+    }
+
+    .streak-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: linear-gradient(135deg, #f5af19, #f12711);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+
+    .skill-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn-skill {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-dashboard {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .btn-dashboard:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        color: white;
+    }
+
+    .btn-delete:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--card-bg);
+        border-radius: 15px;
+        margin-top: 30px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-create:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    @@media (max-width: 768px) {
+        .skills-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
+<div class="skills-header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 style="margin: 0; font-size: 2.5rem;">🎯 My Skills</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Track your learning journey and master new skills</p>
+        </div>
+        <a href="@Url.Action("Create")" class="btn-create">
+            ➕ Add New Skill
+        </a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">@stats.GetValueOrDefault("TotalSkills", 0)</div>
+            <div class="stat-label">Total Skills</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@stats.GetValueOrDefault("ActiveSkills", 0)</div>
+            <div class="stat-label">Active Skills</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@stats.GetValueOrDefault("TotalCompletedDays", 0)</div>
+            <div class="stat-label">Days Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@stats.GetValueOrDefault("HighestStreak", 0)</div>
+            <div class="stat-label">Highest Streak 🔥</div>
+        </div>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="skills-grid">
+        @foreach (var skill in Model)
+        {
+            <div class="skill-card">
+                <div class="skill-header">
+                    <h3 class="skill-name">@skill.SkillName</h3>
+                    <span class="skill-level">@skill.GoalLevel</span>
+                </div>
+
+                <div class="skill-stats">
+                    <div class="skill-stat">
+                        <div class="skill-stat-value">@skill.CompletedDays</div>
+                        <div class="skill-stat-label">Days Done</div>
+                    </div>
+                    <div class="skill-stat">
+                        <div class="skill-stat-value">@skill.RemainingDays</div>
+                        <div class="skill-stat-label">Days Left</div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-label">
+                        <span>Progress</span>
+                        <span><strong>@skill.ProgressPercentage.ToString("F1")%</strong></span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: @skill.ProgressPercentage%"></div>
+                    </div>
+                </div>
+
+                @if (skill.CurrentStreak > 0)
+                {
+                    <div class="streak-badge">
+                        🔥 @skill.CurrentStreak Day Streak
+                    </div>
+                }
+
+                <div class="skill-actions">
+                    <a href="@Url.Action("Dashboard", new { id = skill.Id })" class="btn-skill btn-dashboard">
+                        📊 Dashboard
+                    </a>
+                    <form method="post" action="@Url.Action("Delete", new { id = skill.Id })" style="flex: 1;" 
+                          onsubmit="return confirm('Are you sure you want to delete this skill?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn-skill btn-delete" style="width: 100%;">
+                            🗑️ Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h2 style="color: var(--text-primary); margin-bottom: 15px;">No Skills Yet</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 25px;">
+            Start your learning journey by adding your first skill!
+        </p>
+        <a href="@Url.Action("Create")" class="btn-create">
+            ➕ Add Your First Skill
+        </a>
+    </div>
+}

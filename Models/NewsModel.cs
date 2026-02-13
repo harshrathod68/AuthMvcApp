@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace AuthMvcApp.Models
+namespace MyApps.Models
 {
     public class NewsSearchModel
     {

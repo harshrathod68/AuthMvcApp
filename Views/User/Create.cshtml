@@ -1,4 +1,4 @@
-@model AuthMvcApp.Models.CreateUserModel
+@model MyApps.Models.CreateUserModel
 @{
     ViewData["Title"] = "Add New User";
 }
@@ -51,13 +51,32 @@
                     <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-3">
                     <label asp-for="City" class="form-label">City</label>
                     <div class="input-group">
                         <span class="input-group-text">🏙️</span>
                         <input asp-for="City" class="form-control" placeholder="Enter city" />
                     </div>
                     <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+
+                <!-- Role Selection -->
+                <div class="mb-4">
+                    <label class="form-label">👤 Select Role *</label>
+                    <select name="Role" class="form-select" required>
+                        <option value="User" selected>👤 User - Standard Access</option>
+                        <option value="Manager">💼 Manager - Extended Access</option>
+                        <option value="Moderator">🛡️ Moderator - Content Management</option>
+                        <option value="Guest">🎫 Guest - Limited Access</option>
+                        <option value="Admin">👑 Admin - Full Access</option>
+                    </select>
+                    <small class="text-muted">
+                        <strong>Admin:</strong> Full system access (12 apps)<br/>
+                        <strong>Manager:</strong> Team management tools (9 apps)<br/>
+                        <strong>User:</strong> Personal productivity (4 apps)<br/>
+                        <strong>Moderator:</strong> Content & communication (6 apps)<br/>
+                        <strong>Guest:</strong> Basic information only (3 apps)
+                    </small>
                 </div>
 
                 <div class="alert alert-info">

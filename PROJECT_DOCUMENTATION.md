@@ -1,11 +1,11 @@
-# 📚 AuthMvcApp - Complete Project Documentation
+# 📚 MyApps - Complete Project Documentation
 ## For 6 Months Internship Freshers
 
 ---
 
 ## 🎯 Project Overview (Project ka Introduction)
 
-**Project Name:** AuthMvcApp - Multi-Feature Dashboard  
+**Project Name:** MyApps - Multi-Feature Dashboard  
 **Technology:** ASP.NET Core MVC (.NET 9)  
 **Database:** JSON Files (No SQL Database)  
 **Pattern:** MVC (Model-View-Controller)
@@ -26,7 +26,7 @@ Ek complete web application jo multiple features provide karta hai:
 ## 📁 Folder Structure (Project ki Files)
 
 ```
-AuthMvcApp/
+MyApps/
 │
 ├── Controllers/          ← Yahan sab Controllers hain (Logic)
 │   ├── AccountController.cs    → Login, Register, Logout
@@ -356,8 +356,8 @@ public async Task<WeatherData> GetWeatherAsync(string city)
 
 ### Step 2: Clone/Download
 ```bash
-git clone https://github.com/harshrathod68/AuthMvcApp.git
-cd AuthMvcApp
+git clone https://github.com/harshrathod68/HR-MyApps.git
+cd MyApps
 ```
 
 ### Step 3: Run
@@ -407,7 +407,7 @@ All settings are in `appsettings.json`:
 ## 📞 Contact
 
 **Developer:** Harsh Rathod  
-**GitHub:** https://github.com/harshrathod68/AuthMvcApp
+**GitHub:** https://github.com/harshrathod68/HR-MyApps
 
 ---
 

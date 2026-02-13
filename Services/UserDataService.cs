@@ -1,7 +1,7 @@
 using System.Text.Json;
-using AuthMvcApp.Models;
+using MyApps.Models;
 
-namespace AuthMvcApp.Services
+namespace MyApps.Services
 {
     /// <summary>
     /// Service for managing user data with JSON file storage

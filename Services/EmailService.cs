@@ -2,7 +2,7 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 
-namespace AuthMvcApp.Services
+namespace MyApps.Services
 {
     public class EmailService : IEmailService
     {
@@ -24,7 +24,14 @@ namespace AuthMvcApp.Services
                 var smtpUser = _configuration["EmailSettings:SmtpUser"];
                 var smtpPass = _configuration["EmailSettings:SmtpPass"];
                 var fromEmail = _configuration["EmailSettings:FromEmail"];
-                var fromName = _configuration["EmailSettings:FromName"] ?? "AuthMvcApp";
+                var fromName = _configuration["EmailSettings:FromName"] ?? "MyApps";
+
+                // Validate configuration
+                if (string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass))
+                {
+                    _logger.LogError("SMTP credentials not configured properly");
+                    return false;
+                }
 
                 _logger.LogInformation($"Attempting to send OTP to: {toEmail}");
                 _logger.LogInformation($"Using SMTP: {smtpHost}:{smtpPort}, User: {smtpUser}");
@@ -32,7 +39,7 @@ namespace AuthMvcApp.Services
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress(fromName, fromEmail));
                 message.To.Add(new MailboxAddress(toEmail, toEmail));
-                message.Subject = "Email Verification OTP - AuthMvcApp";
+                message.Subject = "Email Verification OTP - MyApps";
 
                 var bodyBuilder = new BodyBuilder
                 {
@@ -52,7 +59,7 @@ namespace AuthMvcApp.Services
         <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
         <p style='color: #666; font-size: 12px; text-align: center;'>
             If you didn't request this OTP, please ignore this email.<br>
-            © 2026 AuthMvcApp
+            © 2026 MyApps
         </p>
     </div>
 </body>
@@ -63,20 +70,41 @@ namespace AuthMvcApp.Services
 
                 using var client = new SmtpClient();
                 
+                // Set timeout
+                client.Timeout = 30000; // 30 seconds
+                
                 // Connect to Gmail SMTP
+                _logger.LogInformation("Connecting to SMTP server...");
                 await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
+                _logger.LogInformation("Connected successfully");
                 
                 // Authenticate
+                _logger.LogInformation("Authenticating...");
                 await client.AuthenticateAsync(smtpUser, smtpPass);
+                _logger.LogInformation("Authenticated successfully");
                 
                 // Send email
+                _logger.LogInformation("Sending email...");
                 await client.SendAsync(message);
+                _logger.LogInformation("Email sent successfully");
                 
                 // Disconnect
                 await client.DisconnectAsync(true);
 
                 _logger.LogInformation($"OTP sent successfully to {toEmail}");
                 return true;
+            }
+            catch (MailKit.Security.AuthenticationException authEx)
+            {
+                _logger.LogError($"Authentication failed: {authEx.Message}");
+                _logger.LogError("Please check your Gmail App Password. Generate a new one if needed.");
+                return false;
+            }
+            catch (System.Net.Sockets.SocketException socketEx)
+            {
+                _logger.LogError($"Network error: {socketEx.Message}");
+                _logger.LogError("Please check your internet connection.");
+                return false;
             }
             catch (Exception ex)
             {
@@ -85,6 +113,7 @@ namespace AuthMvcApp.Services
                 {
                     _logger.LogError($"Inner Exception: {ex.InnerException.Message}");
                 }
+                _logger.LogError($"Stack Trace: {ex.StackTrace}");
                 return false;
             }
         }
@@ -98,14 +127,14 @@ namespace AuthMvcApp.Services
                 var smtpUser = _configuration["EmailSettings:SmtpUser"];
                 var smtpPass = _configuration["EmailSettings:SmtpPass"];
                 var fromEmail = _configuration["EmailSettings:FromEmail"];
-                var fromName = _configuration["EmailSettings:FromName"] ?? "AuthMvcApp";
+                var fromName = _configuration["EmailSettings:FromName"] ?? "MyApps";
 
                 _logger.LogInformation($"Attempting to send Reset Code to: {toEmail}");
 
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress(fromName, fromEmail));
                 message.To.Add(new MailboxAddress(toEmail, toEmail));
-                message.Subject = "Password Reset Code - AuthMvcApp";
+                message.Subject = "Password Reset Code - MyApps";
 
                 var bodyBuilder = new BodyBuilder
                 {
@@ -124,7 +153,7 @@ namespace AuthMvcApp.Services
         <p style='color: #dc3545; font-size: 13px;'>⚠️ If you didn't request this, please ignore this email. Your password will remain unchanged.</p>
         <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
         <p style='color: #666; font-size: 12px; text-align: center;'>
-            © 2026 AuthMvcApp - Password Reset Request
+            © 2026 MyApps - Password Reset Request
         </p>
     </div>
 </body>

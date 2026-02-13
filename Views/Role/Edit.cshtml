@@ -1,0 +1,197 @@
+@model MyApps.Models.ManageRolePermissionModel
+@{
+    ViewData["Title"] = $"Manage {Model.Role} Apps";
+}
+
+<div class="form-container" style="max-width: 700px;">
+    <div class="card">
+        <div class="card-header text-white" style="background: linear-gradient(135deg, @(Model.Role == "Admin" ? "#667eea 0%, #764ba2" : "#11998e 0%, #38ef7d") 100%);">
+            <h4>@(Model.Role == "Admin" ? "👑" : "👤") Manage @Model.Role Apps</h4>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-4">
+                Select which applications should be visible for <strong>@Model.Role</strong> role users in their dashboard.
+            </p>
+
+            <form asp-action="Edit" asp-route-role="@Model.Role" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="apps-grid">
+                    @foreach (var app in Model.Apps.OrderBy(a => a.Key))
+                    {
+                        <div class="app-checkbox-card">
+                            <input type="checkbox" 
+                                   name="selectedApps" 
+                                   value="@app.Key" 
+                                   id="app_@app.Key" 
+                                   @(app.Value ? "checked" : "")
+                                   class="app-checkbox">
+                            <label for="app_@app.Key" class="app-label">
+                                <span class="app-icon">@GetAppIcon(app.Key)</span>
+                                <span class="app-name">@GetAppDisplayName(app.Key)</span>
+                                <span class="check-indicator">✓</span>
+                            </label>
+                        </div>
+                    }
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        💾 Save Permissions
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        ← Back to Roles
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetAppIcon(string appName)
+    {
+        return appName switch
+        {
+            "Weather" => "🌤️",
+            "Currency" => "💱",
+            "TimeZone" => "🕐",
+            "Country" => "🌍",
+            "News" => "📰",
+            "Notes" => "📝",
+            "Habits" => "🎯",
+            "Translator" => "🌐",
+            "Emergency" => "🚨",
+            "TimeTrack" => "⏱️",
+            "SkillRoadmap" => "🎯",
+            "PdfConverter" => "📄",
+            _ => "📱"
+        };
+    }
+
+    string GetAppDisplayName(string appName)
+    {
+        return appName switch
+        {
+            "TimeZone" => "Time Conversion",
+            "TimeTrack" => "Time Track",
+            "SkillRoadmap" => "Skill Roadmap",
+            "PdfConverter" => "PDF Converter",
+            _ => appName
+        };
+    }
+}
+
+<style>
+    .apps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .app-checkbox-card {
+        position: relative;
+    }
+
+    .app-checkbox {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .app-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 25px 15px;
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        min-height: 140px;
+    }
+
+    .app-label:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px var(--shadow-medium);
+        border-color: #667eea;
+    }
+
+    .app-checkbox:checked + .app-label {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border-color: #667eea;
+        border-width: 3px;
+    }
+
+    .app-icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+
+    .app-name {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--text-primary);
+        text-align: center;
+    }
+
+    .check-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        background: #667eea;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+        opacity: 0;
+        transform: scale(0);
+        transition: all 0.3s ease;
+    }
+
+    .app-checkbox:checked + .app-label .check-indicator {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    @@media (max-width: 767px) {
+        .apps-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .app-label {
+            padding: 20px 10px;
+            min-height: 120px;
+        }
+
+        .app-icon {
+            font-size: 2.5rem;
+        }
+
+        .app-name {
+            font-size: 0.9rem;
+        }
+
+        .check-indicator {
+            width: 25px;
+            height: 25px;
+            font-size: 1rem;
+        }
+    }
+
+    @@media (max-width: 575px) {
+        .apps-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>

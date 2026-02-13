@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AuthMvcApp.Models
+namespace MyApps.Models
 {
     public class RegisterModel
     {
@@ -21,5 +21,8 @@ namespace AuthMvcApp.Models
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Role is required")]
+        public string Role { get; set; } = "User"; // "Admin" or "User"
     }
 }

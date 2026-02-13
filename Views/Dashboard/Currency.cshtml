@@ -1,5 +1,5 @@
-@model AuthMvcApp.Models.CurrencyConversionModel
-@using AuthMvcApp.Models
+@model MyApps.Models.CurrencyConversionModel
+@using MyApps.Models
 @{
     ViewData["Title"] = "Currency Conversion";
     var result = ViewBag.Result as CurrencyResultModel;
@@ -279,6 +279,11 @@
         border-radius: 25px;
         background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         color: white;
+    }
+
+    [data-theme="dark"] .result-card {
+        background: linear-gradient(135deg, #1a4a45 0%, #2a5a4a 100%);
+        color: #ffffff;
     }
 
     .result-card .card-body {

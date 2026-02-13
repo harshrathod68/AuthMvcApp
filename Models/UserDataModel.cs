@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AuthMvcApp.Models
+namespace MyApps.Models
 {
     /// <summary>
     /// Model for user data stored in JSON file
@@ -33,6 +33,11 @@ namespace AuthMvcApp.Models
         /// Password for user login (stored in JSON, not shown in list)
         /// </summary>
         public string Password { get; set; } = string.Empty;
+
+        /// <summary>
+        /// User role: Admin or User
+        /// </summary>
+        public string Role { get; set; } = "User";
 
         /// <summary>
         /// City of the user
@@ -95,6 +100,10 @@ namespace AuthMvcApp.Models
         [StringLength(50, ErrorMessage = "City cannot exceed 50 characters")]
         [Display(Name = "City")]
         public string? City { get; set; }
+
+        [Required(ErrorMessage = "Role is required")]
+        [Display(Name = "Role")]
+        public string Role { get; set; } = "User";
     }
 
     /// <summary>

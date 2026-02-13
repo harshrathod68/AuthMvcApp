@@ -1,0 +1,382 @@
+@model List<DailyAccessSummary>
+@{
+    ViewData["Title"] = "Access History";
+}
+
+<div class="history-container">
+    <!-- Header -->
+    <div class="history-header">
+        <div class="header-left">
+            <h2>📊 User Access History</h2>
+            <p class="text-muted mb-0">Track user login activity and access patterns</p>
+        </div>
+        <div class="header-right">
+            <a asp-action="Index" class="btn btn-back-btn">
+                <span>←</span> Back to Users
+            </a>
+        </div>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <!-- Empty State -->
+        <div class="card empty-card">
+            <div class="card-body text-center py-5">
+                <div class="empty-icon">📭</div>
+                <h4 class="mb-3">No Access History</h4>
+                <p class="text-muted mb-0">
+                    No user login activity has been recorded yet.
+                </p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Daily Summary Cards -->
+        @foreach (var day in Model)
+        {
+            <div class="card day-card mb-4">
+                <div class="card-header day-header">
+                    <div class="day-info">
+                        <h5 class="day-date">📅 @DateTime.Parse(day.Date).ToString("dddd, MMMM dd, yyyy")</h5>
+                        <span class="day-count">Total Access: <strong>@day.TotalAccess</strong></span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table history-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>User Name</th>
+                                    <th>Email</th>
+                                    <th>User ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var log in day.AccessLogs)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="time-badge">
+                                                🕐 @log.AccessTime.ToString("hh:mm:ss tt")
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="user-info">
+                                                <div class="user-avatar-small">@log.UserName[0].ToString().ToUpper()</div>
+                                                <span class="user-name">@log.UserName</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="user-email-text">@log.UserEmail</span>
+                                        </td>
+                                        <td>
+                                            <span class="user-id-badge">ID: @log.UserId</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Summary Stats -->
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="stat-box">
+                            <div class="stat-icon">📆</div>
+                            <div class="stat-value">@Model.Count</div>
+                            <div class="stat-label">Days Tracked</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box">
+                            <div class="stat-icon">🔢</div>
+                            <div class="stat-value">@Model.Sum(d => d.TotalAccess)</div>
+                            <div class="stat-label">Total Access</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">@(Model.Any() ? Math.Round((double)Model.Sum(d => d.TotalAccess) / Model.Count, 1) : 0)</div>
+                            <div class="stat-label">Avg Per Day</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .history-container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .history-header h2 {
+        margin: 0;
+        font-weight: 700;
+        color: var(--text-primary) !important;
+    }
+
+    .history-header p {
+        color: var(--text-muted) !important;
+    }
+
+    .btn-back-btn {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-back-btn:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+    }
+
+    .day-card {
+        border: 1px solid var(--border-color) !important;
+        border-radius: 20px;
+        box-shadow: 0 5px 25px var(--shadow-light);
+        overflow: hidden;
+        background-color: var(--card-bg) !important;
+    }
+
+    .day-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border: none !important;
+        padding: 20px 25px;
+    }
+
+    .day-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .day-date {
+        margin: 0;
+        color: white !important;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .day-count {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+    }
+
+    .day-count strong {
+        color: white !important;
+        font-weight: 700;
+    }
+
+    .history-table {
+        background-color: var(--card-bg) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .history-table thead {
+        background: var(--bg-secondary) !important;
+    }
+
+    .history-table thead th {
+        color: var(--text-primary) !important;
+        font-weight: 600;
+        padding: 15px;
+        border: none;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .history-table tbody tr {
+        transition: all 0.3s ease;
+        background-color: var(--card-bg) !important;
+    }
+
+    .history-table tbody tr:hover {
+        background: rgba(102, 126, 234, 0.08) !important;
+    }
+
+    .history-table tbody td {
+        padding: 15px;
+        vertical-align: middle;
+        border-color: var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .time-badge {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white !important;
+        padding: 6px 14px;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-avatar-small {
+        width: 35px;
+        height: 35px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white !important;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .user-name {
+        color: var(--text-primary) !important;
+        font-weight: 600;
+    }
+
+    .user-email-text {
+        color: #667eea !important;
+        font-weight: 500;
+    }
+
+    .user-id-badge {
+        background: rgba(102, 126, 234, 0.15);
+        color: #667eea !important;
+        padding: 5px 12px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .stats-card {
+        border: 1px solid var(--border-color) !important;
+        border-radius: 20px;
+        box-shadow: 0 5px 25px var(--shadow-light);
+        background-color: var(--card-bg) !important;
+    }
+
+    .stat-box {
+        padding: 20px;
+    }
+
+    .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-primary) !important;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        color: var(--text-muted) !important;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .empty-card {
+        border: 1px solid var(--border-color) !important;
+        border-radius: 20px;
+        box-shadow: 0 5px 25px var(--shadow-light);
+        background-color: var(--card-bg) !important;
+    }
+
+    .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-card h4 {
+        color: var(--text-primary) !important;
+    }
+
+    .empty-card p {
+        color: var(--text-muted) !important;
+    }
+
+    .table-responsive {
+        background-color: var(--card-bg) !important;
+    }
+
+    @@media (max-width: 768px) {
+        .history-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .day-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .day-date {
+            font-size: 1rem;
+        }
+
+        .history-table thead th {
+            padding: 10px 8px;
+            font-size: 0.75rem;
+        }
+
+        .history-table tbody td {
+            padding: 10px 8px;
+            font-size: 0.85rem;
+        }
+
+        .user-avatar-small {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+        }
+    }
+</style>

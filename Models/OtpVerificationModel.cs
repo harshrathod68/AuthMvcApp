@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AuthMvcApp.Models
+namespace MyApps.Models
 {
     public class OtpVerificationModel
     {

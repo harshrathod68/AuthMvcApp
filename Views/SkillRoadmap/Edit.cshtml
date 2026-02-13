@@ -1,0 +1,213 @@
+@model MyApps.Models.SkillMasteryModel
+@{
+    ViewData["Title"] = "Edit Skill";
+}
+
+<style>
+    .edit-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .edit-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .edit-form {
+        background: var(--card-bg);
+        padding: 35px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        cursor: pointer;
+    }
+
+    .form-help {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 5px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-submit {
+        flex: 1;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-cancel {
+        flex: 1;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        padding: 14px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+    }
+
+    .btn-cancel:hover {
+        background: var(--border-color);
+    }
+
+    .text-danger {
+        color: #ff416c;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+
+    .info-box {
+        background: rgba(102, 126, 234, 0.1);
+        border-left: 4px solid #667eea;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+    }
+
+    .info-box p {
+        margin: 5px 0;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="edit-container">
+    <div class="edit-header">
+        <h1 style="margin: 0; font-size: 2.5rem;">✏️ Edit Skill</h1>
+        <p style="margin: 10px 0 0 0; opacity: 0.9;">Update your skill details</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>⚠️ Note:</strong> Changing total days or start date may affect your progress calculations.</p>
+    </div>
+
+    <form method="post" asp-action="Edit" class="edit-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="UserEmail" />
+        <input type="hidden" asp-for="CreatedAt" />
+        <input type="hidden" asp-for="CompletedDays" />
+        <input type="hidden" asp-for="MissedDays" />
+        <input type="hidden" asp-for="CurrentStreak" />
+        <input type="hidden" asp-for="LongestStreak" />
+        <input type="hidden" asp-for="TotalMinutesSpent" />
+
+        <div class="form-group">
+            <label asp-for="SkillName" class="form-label">Skill Name *</label>
+            <input asp-for="SkillName" class="form-control" placeholder="e.g., JavaScript, Guitar, Spanish" />
+            <span asp-validation-for="SkillName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="GoalLevel" class="form-label">Goal Level *</label>
+            <select asp-for="GoalLevel" class="form-select">
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+            </select>
+            <span asp-validation-for="GoalLevel" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="TotalDays" class="form-label">Total Duration (Days) *</label>
+            <input asp-for="TotalDays" type="number" class="form-control" min="1" max="365" />
+            <div class="form-help">Current: @Model.TotalDays days</div>
+            <span asp-validation-for="TotalDays" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DailyMinutes" class="form-label">Daily Time Commitment (Minutes) *</label>
+            <input asp-for="DailyMinutes" type="number" class="form-control" min="15" max="480" />
+            <div class="form-help">Current: @Model.DailyMinutes minutes per day</div>
+            <span asp-validation-for="DailyMinutes" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="StartDate" class="form-label">Start Date *</label>
+            <input asp-for="StartDate" type="date" class="form-control" />
+            <div class="form-help">Current: @Model.StartDate.ToString("MMM dd, yyyy")</div>
+            <span asp-validation-for="StartDate" class="text-danger"></span>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">
+                💾 Save Changes
+            </button>
+            <a href="@Url.Action("Dashboard", new { id = Model.Id })" class="btn-cancel">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

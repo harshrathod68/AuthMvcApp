@@ -1,4 +1,4 @@
-@model AuthMvcApp.Models.NoteEditModel
+@model MyApps.Models.NoteEditModel
 @{
     ViewData["Title"] = "Edit Note";
 }
@@ -26,12 +26,12 @@
                             
                             <div class="col-md-4">
                                 <label asp-for="Category" class="form-label">Category</label>
-                                <select asp-for="Category" class="form-select" id="categorySelect">
-                                    <option value="text">📝 Text</option>
-                                    <option value="image">🖼️ Image</option>
-                                    <option value="link">🔗 Link</option>
-                                    <option value="todo">✅ Todo</option>
-                                    <option value="idea">💡 Idea</option>
+                                <select asp-for="Category" class="form-select" id="categorySelect" name="Category">
+                                    <option value="text" selected="@(Model.Category == "text" ? "selected" : null)">📝 Text</option>
+                                    <option value="image" selected="@(Model.Category == "image" ? "selected" : null)">🖼️ Image</option>
+                                    <option value="link" selected="@(Model.Category == "link" ? "selected" : null)">🔗 Link</option>
+                                    <option value="todo" selected="@(Model.Category == "todo" ? "selected" : null)">✅ Todo</option>
+                                    <option value="idea" selected="@(Model.Category == "idea" ? "selected" : null)">💡 Idea</option>
                                 </select>
                             </div>
                             
@@ -119,7 +119,9 @@
 
 @section Scripts {
     <script>
-        document.getElementById('categorySelect').addEventListener('change', function() {
+        var categorySelect = document.getElementById('categorySelect');
+        
+        categorySelect.addEventListener('change', function() {
             var cat = this.value;
             document.getElementById('contentSection').style.display = (cat === 'text' || cat === 'idea') ? 'block' : 'none';
             document.getElementById('imageSection').style.display = cat === 'image' ? 'block' : 'none';
@@ -127,19 +129,25 @@
             document.getElementById('todoSection').style.display = cat === 'todo' ? 'block' : 'none';
         });
         
-        document.getElementById('categorySelect').dispatchEvent(new Event('change'));
+        // Trigger on load to show correct section
+        categorySelect.dispatchEvent(new Event('change'));
         
         // Load existing todo items
         var existingTodos = @Html.Raw(Model.TodoItemsJson ?? "[]");
-        existingTodos.forEach(function(item) {
-            addTodoItem(item.Text, item.IsCompleted);
-        });
+        if (existingTodos && existingTodos.length > 0) {
+            existingTodos.forEach(function(item) {
+                addTodoItem(item.Text, item.IsCompleted);
+            });
+        }
         
         function addTodoItem(text, completed) {
+            text = text || '';
+            completed = completed || false;
+            
             var div = document.createElement('div');
             div.className = 'todo-item';
             div.innerHTML = '<input type="checkbox" class="form-check-input" ' + (completed ? 'checked' : '') + ' onchange="updateTodoJson()" />' +
-                           '<input type="text" class="form-control" value="' + (text || '') + '" onchange="updateTodoJson()" />' +
+                           '<input type="text" class="form-control" value="' + text + '" placeholder="Todo item..." onchange="updateTodoJson()" />' +
                            '<button type="button" class="btn btn-sm text-danger" onclick="this.parentElement.remove(); updateTodoJson();">🗑️</button>';
             document.getElementById('todoList').appendChild(div);
         }
@@ -155,5 +163,16 @@
             });
             document.getElementById('todoItemsJson').value = JSON.stringify(items);
         }
+        
+        // Initialize todo JSON on load
+        if (categorySelect.value === 'todo') {
+            updateTodoJson();
+        }
+        
+        // Before form submit, log data for debugging
+        document.querySelector('form').addEventListener('submit', function(e) {
+            console.log('Updating note with category:', categorySelect.value);
+            console.log('Form data:', new FormData(this));
+        });
     </script>
 }

@@ -1,4 +1,4 @@
-@model List<AuthMvcApp.Models.NoteModel>
+@model List<MyApps.Models.NoteModel>
 @{
     ViewData["Title"] = "My Notes";
     var currentCategory = ViewBag.CurrentCategory as string;
@@ -28,39 +28,19 @@
         </div>
     }
 
-    <!-- Filter & Search -->
+    <!-- Search Only -->
     <div class="card filter-card mb-4">
         <div class="card-body">
             <form method="get" class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label">Category</label>
-                    <select name="category" class="form-select" onchange="this.form.submit()">
-                        <option value="">All Notes</option>
-                        <option value="text" selected="@(currentCategory == "text")">📝 Text</option>
-                        <option value="image" selected="@(currentCategory == "image")">🖼️ Image</option>
-                        <option value="link" selected="@(currentCategory == "link")">🔗 Link</option>
-                        <option value="todo" selected="@(currentCategory == "todo")">✅ Todo</option>
-                        <option value="idea" selected="@(currentCategory == "idea")">💡 Idea</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
+                <div class="col-md-9">
                     <label class="form-label">Search</label>
-                    <input type="text" name="search" class="form-control" placeholder="Search notes..." value="@search" />
+                    <input type="text" name="search" class="form-control uniform-input" placeholder="Search notes..." value="@search" />
                 </div>
                 <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                    <button type="submit" class="btn btn-primary uniform-input w-100">Search</button>
                 </div>
             </form>
         </div>
-    </div>
-
-    <!-- Category Quick Add -->
-    <div class="category-buttons mb-4">
-        <a asp-action="Create" asp-route-category="text" class="btn btn-cat btn-cat-text">📝 Text</a>
-        <a asp-action="Create" asp-route-category="image" class="btn btn-cat btn-cat-image">🖼️ Image</a>
-        <a asp-action="Create" asp-route-category="link" class="btn btn-cat btn-cat-link">🔗 Link</a>
-        <a asp-action="Create" asp-route-category="todo" class="btn btn-cat btn-cat-todo">✅ Todo</a>
-        <a asp-action="Create" asp-route-category="idea" class="btn btn-cat btn-cat-idea">💡 Idea</a>
     </div>
 
     <!-- Notes Grid -->
@@ -156,6 +136,13 @@
     }
 </div>
 
+<!-- Back Button at Bottom -->
+<div class="text-center mt-4 mb-4">
+    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-back">
+        <i class="bi bi-arrow-left me-2"></i>← Back to Dashboard
+    </a>
+</div>
+
 <style>
     .notes-container { padding: 20px; }
     
@@ -175,20 +162,24 @@
         box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     }
     
-    .category-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn-cat {
-        border-radius: 20px;
-        padding: 8px 20px;
-        font-weight: 500;
-        border: none;
-        color: white;
+    [data-theme="dark"] .filter-card {
+        background: #2d2d2d;
+        color: #ffffff;
     }
-    .btn-cat-text { background: #667eea; }
-    .btn-cat-image { background: #f093fb; }
-    .btn-cat-link { background: #4facfe; }
-    .btn-cat-todo { background: #43e97b; }
-    .btn-cat-idea { background: #fa709a; }
-    .btn-cat:hover { color: white; opacity: 0.9; }
+    
+    /* Uniform input sizes */
+    .uniform-input {
+        height: 42px !important;
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+    
+    .uniform-input.btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
     
     .note-card {
         border: none;
@@ -196,6 +187,12 @@
         box-shadow: 0 5px 20px rgba(0,0,0,0.08);
         transition: all 0.3s ease;
     }
+    
+    [data-theme="dark"] .note-card {
+        background: #2d2d2d;
+        color: #ffffff;
+    }
+    
     .note-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 15px 40px rgba(0,0,0,0.15);
@@ -210,8 +207,8 @@
         font-size: 0.75rem;
     }
     
-    .note-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; }
-    .note-content { color: #666; font-size: 0.9rem; }
+    .note-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; color: inherit; }
+    .note-content { color: var(--text-secondary); font-size: 0.9rem; }
     
     .note-image {
         width: 100%;
@@ -223,7 +220,7 @@
     
     .note-link {
         display: block;
-        background: #f0f0f0;
+        background: var(--bg-secondary);
         padding: 10px;
         border-radius: 8px;
         font-size: 0.85rem;
@@ -243,7 +240,7 @@
         padding: 5px 0;
         font-size: 0.9rem;
     }
-    .todo-list li.completed { text-decoration: line-through; color: #999; }
+    .todo-list li.completed { text-decoration: line-through; color: var(--text-muted); }
     .todo-list li.more { color: #667eea; font-style: italic; }
     
     .note-footer {
@@ -252,7 +249,8 @@
         align-items: center;
         margin-top: 15px;
         padding-top: 10px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid var(--border-color);
+        color: inherit;
     }
     
     .btn-icon {

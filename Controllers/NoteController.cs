@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using AuthMvcApp.Services;
-using AuthMvcApp.Models;
+using MyApps.Services;
+using MyApps.Models;
 using System.Text.Json;
 
-namespace AuthMvcApp.Controllers
+namespace MyApps.Controllers
 {
     public class NoteController : Controller
     {
@@ -45,13 +45,33 @@ namespace AuthMvcApp.Controllers
             
             ViewBag.UserName = HttpContext.Session.GetString("UserName");
 
-            if (!ModelState.IsValid) return View(model);
+            // Remove validation for fields that are not required based on category
+            if (model.Category == "image")
+            {
+                ModelState.Remove("Content");
+            }
+            else if (model.Category == "link")
+            {
+                ModelState.Remove("Content");
+            }
+            else if (model.Category == "todo")
+            {
+                ModelState.Remove("Content");
+            }
+
+            if (!ModelState.IsValid) 
+            {
+                // Log validation errors for debugging
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                TempData["Error"] = "Validation failed: " + string.Join(", ", errors);
+                return View(model);
+            }
 
             var note = new NoteModel
             {
                 UserId = HttpContext.Session.GetString("UserId")!,
                 Title = model.Title,
-                Content = model.Content,
+                Content = model.Content ?? "",
                 Category = model.Category,
                 Color = model.Color,
                 ImageUrl = model.ImageUrl,
@@ -108,14 +128,34 @@ namespace AuthMvcApp.Controllers
             
             ViewBag.UserName = HttpContext.Session.GetString("UserName");
 
-            if (!ModelState.IsValid) return View(model);
+            // Remove validation for fields that are not required based on category
+            if (model.Category == "image")
+            {
+                ModelState.Remove("Content");
+            }
+            else if (model.Category == "link")
+            {
+                ModelState.Remove("Content");
+            }
+            else if (model.Category == "todo")
+            {
+                ModelState.Remove("Content");
+            }
+
+            if (!ModelState.IsValid) 
+            {
+                // Log validation errors for debugging
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                TempData["Error"] = "Validation failed: " + string.Join(", ", errors);
+                return View(model);
+            }
 
             var note = new NoteModel
             {
                 Id = model.Id,
                 UserId = HttpContext.Session.GetString("UserId")!,
                 Title = model.Title,
-                Content = model.Content,
+                Content = model.Content ?? "",
                 Category = model.Category,
                 Color = model.Color,
                 IsPinned = model.IsPinned,

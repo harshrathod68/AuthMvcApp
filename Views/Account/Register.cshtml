@@ -1,4 +1,4 @@
-@model AuthMvcApp.Models.RegisterModel
+@model MyApps.Models.RegisterModel
 
 @{
     ViewData["Title"] = "Register";
@@ -10,6 +10,18 @@
             <h4>📝 Create Account</h4>
         </div>
         <div class="card-body">
+            <!-- Email Setup Notice -->
+            @if (TempData["EmailSetupNotice"] == null)
+            {
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <strong>📧 Email Setup Required!</strong><br/>
+                    OTP will be sent to your email. Make sure Gmail App Password is configured.<br/>
+                    <a href="@Url.Action("TestEmail", "Account")" class="alert-link">Test Email Setup</a> | 
+                    <a href="/FIX_EMAIL_ISSUE.md" target="_blank" class="alert-link">Setup Guide</a>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            
             <form asp-action="Register" method="post">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
                 

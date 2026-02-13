@@ -1,7 +1,7 @@
-@model AuthMvcApp.Models.CountrySearchModel
+@model MyApps.Models.CountrySearchModel
 @{
     ViewData["Title"] = "Country Information";
-    var countryInfo = ViewBag.CountryInfo as AuthMvcApp.Models.CountryInfoModel;
+    var countryInfo = ViewBag.CountryInfo as MyApps.Models.CountryInfoModel;
 }
 
 <div class="country-container">
@@ -246,6 +246,13 @@
     </div>
 </div>
 
+<!-- Back Button at Bottom -->
+<div class="text-center mt-4 mb-4">
+    <a asp-action="Index" class="btn btn-back">
+        <i class="bi bi-arrow-left me-2"></i>← Back to Dashboard
+    </a>
+</div>
+
 <style>
     .country-container {
         padding: 20px 0;
@@ -272,6 +279,11 @@
         background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         color: white;
         padding: 30px;
+    }
+
+    [data-theme="dark"] .country-header {
+        background: linear-gradient(135deg, #2a5a7a 0%, #2a6a7a 100%);
+        color: #ffffff;
     }
 
     .country-flag {
@@ -308,6 +320,11 @@
         transition: all 0.3s ease;
     }
 
+    [data-theme="dark"] .info-box {
+        background: #2d2d2d;
+        color: #ffffff;
+    }
+
     .info-box:hover {
         transform: translateY(-3px);
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -336,16 +353,29 @@
         color: #333;
     }
 
+    [data-theme="dark"] .info-value {
+        color: #ffffff;
+    }
+
     .detail-section {
         background: #f8f9fa;
         padding: 20px;
         border-radius: 15px;
     }
 
+    [data-theme="dark"] .detail-section {
+        background: #2d2d2d;
+        color: #ffffff;
+    }
+
     .section-title {
         font-weight: 600;
         color: #333;
         margin-bottom: 15px;
+    }
+
+    [data-theme="dark"] .section-title {
+        color: #ffffff;
     }
 
     .tag-list {
@@ -391,9 +421,17 @@
         border-radius: 10px;
     }
 
+    [data-theme="dark"] .codes-section {
+        background: #2d2d2d;
+    }
+
     .code-item {
         font-size: 0.9rem;
         color: #555;
+    }
+
+    [data-theme="dark"] .code-item {
+        color: #cccccc;
     }
 
     .btn-primary {

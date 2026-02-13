@@ -1,19 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AuthMvcApp</title>
+    <title>@ViewData["Title"] - MyApps</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-sm">
-            <div class="container">
+            <div class="container-fluid px-4">
                 <a class="navbar-brand" asp-controller="Dashboard" asp-action="Index">
-                    <span class="brand-icon">🔐</span>
-                    <span class="brand-text">AuthMvcApp</span>
+                    <span class="brand-icon">🚀</span>
+                    <span class="brand-text">MyApps</span>
                 </a>
                 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -21,28 +21,36 @@
                 </button>
                 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <div class="navbar-nav ms-auto align-items-center">
+                    <div class="navbar-nav ms-auto align-items-center me-4">
+                        
+                        <!-- Theme Toggle Button -->
+                        <div class="theme-toggle me-3">
+                            <button class="btn btn-theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                                <span class="theme-icon" id="themeIcon">🌙</span>
+                            </button>
+                        </div>
+
                         <!-- Language Selector -->
-                        <div class="dropdown me-3">
-                            <button class="btn btn-translate dropdown-toggle notranslate" type="button" data-bs-toggle="dropdown">
+                        <div class="dropdown me-4 notranslate">
+                            <button class="btn btn-translate dropdown-toggle notranslate" type="button" data-bs-toggle="dropdown" id="langBtn">
                                 🌐 Language
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end lang-dropdown notranslate">
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('en')">🇬🇧 English</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('hi')">🇮🇳 हिंदी</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('bn')">🇮🇳 বাংলা</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('ta')">🇮🇳 தமிழ்</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('te')">🇮🇳 తెలుగు</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('mr')">🇮🇳 मराठी</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('gu')">🇮🇳 ગુજરાતી</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('en'); return false;">🇺🇸 English</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('hi'); return false;">🇮🇳 हिंदी</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('bn'); return false;">🇮🇳 বাংলা</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('ta'); return false;">🇮🇳 தமிழ்</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('te'); return false;">🇮🇳 తెలుగు</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('mr'); return false;">🇮🇳 मराठी</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('gu'); return false;">🇮🇳 ગુજરાતી</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('ar')">🇸🇦 العربية</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('zh-CN')">🇨🇳 中文</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('ja')">🇯🇵 日本語</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('fr')">🇫🇷 Français</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('de')">🇩🇪 Deutsch</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('es')">🇪🇸 Español</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="translatePage('ru')">🇷🇺 Русский</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('ar'); return false;">🇸🇦 العربية</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('zh-CN'); return false;">🇨🇳 中文</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('ja'); return false;">🇯🇵 日本語</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('fr'); return false;">🇫🇷 Français</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('de'); return false;">🇩🇪 Deutsch</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('es'); return false;">🇪🇸 Español</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="translatePage('ru'); return false;">🇷🇺 Русский</a></li>
                             </ul>
                         </div>
                         
@@ -52,7 +60,7 @@
                                 <span class="nav-icon">🔑</span> Login
                             </a>
                             <a class="nav-link nav-btn nav-btn-primary" asp-controller="Account" asp-action="Register">
-                                <span class="nav-icon">📝</span> Register
+                                <span class="nav-icon">✨</span> Register
                             </a>
                         }
                         else
@@ -60,9 +68,16 @@
                             <a class="nav-link nav-btn" asp-controller="Dashboard" asp-action="Index">
                                 <span class="nav-icon">🏠</span> Home
                             </a>
-                            <a class="nav-link nav-btn" asp-controller="User" asp-action="Index">
-                                <span class="nav-icon">👤</span> Users
-                            </a>
+                            @* Only show Users and Account Role links for Admin *@
+                            @if (Context.Session.GetString("UserRole") == "Admin")
+                            {
+                                <a class="nav-link nav-btn" asp-controller="User" asp-action="Index">
+                                    <span class="nav-icon">👥</span> Users
+                                </a>
+                                <a class="nav-link nav-btn" asp-controller="Role" asp-action="Index">
+                                    <span class="nav-icon">🔐</span> Account Role
+                                </a>
+                            }
                             <a class="nav-link nav-btn nav-btn-danger" asp-controller="Account" asp-action="Logout">
                                 <span class="nav-icon">🚪</span> Logout
                             </a>
@@ -74,80 +89,352 @@
     </header>
     
     <!-- Hidden Google Translate Element -->
-    <div id="google_translate_element" style="display:none;"></div>
+    <div id="google_translate_element" style="display:none !important; height:0 !important; width:0 !important; margin:0 !important; padding:0 !important;"></div>
     
-    <div class="container-fluid px-0 flex-grow-1">
+    <div class="container-fluid px-0 flex-grow-1" style="padding-top: 80px;">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
     <footer class="footer mt-auto">
         <div class="container text-center py-3">
-            © 2026 AuthMvcApp - Multi-Feature Dashboard
+            © 2026 MyApps - Multi-Feature Dashboard
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Theme Toggle JavaScript -->
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            body.setAttribute('data-theme', savedTheme);
+            if (themeIcon) {
+                themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            }
+        });
+    </script>
+    
     <!-- Google Translate -->
     <script type="text/javascript">
         function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                autoDisplay: false
-            }, 'google_translate_element');
+            try {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,hi,bn,ta,te,mr,gu,ar,zh-CN,ja,fr,de,es,ru',
+                    autoDisplay: false,
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                }, 'google_translate_element');
+            } catch (e) {
+                console.log('Google Translate init error:', e);
+            }
         }
         
         function translatePage(lang) {
-            var select = document.querySelector('#google_translate_element select');
-            if (select) {
-                select.value = lang;
-                select.dispatchEvent(new Event('change'));
+            if (lang === 'en') {
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + window.location.hostname + "; path=/;";
             } else {
-                // If Google Translate not loaded, try cookie method
-                document.cookie = "googtrans=/en/" + lang;
-                document.cookie = "googtrans=/en/" + lang + ";domain=" + window.location.hostname;
-                location.reload();
+                document.cookie = "googtrans=/en/" + lang + "; path=/;";
+                document.cookie = "googtrans=/en/" + lang + "; domain=" + window.location.hostname + "; path=/;";
             }
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
         }
+        
+        // Hide banner elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const hideGoogleElements = setInterval(() => {
+                const googleElements = document.querySelectorAll('[id*="google"], [class*="goog"], [class*="skiptranslate"]');
+                googleElements.forEach(el => {
+                    if (el.id !== 'google_translate_element') {
+                        el.style.display = 'inline-block';
+                        el.style.height = '0';
+                        el.style.width = '0';
+                        el.style.margin = '0';
+                        el.style.padding = '0';
+                        el.style.visibility = 'hidden';
+                        el.style.fontSize = '0';
+                        el.style.lineHeight = '0';
+                    }
+                });
+            }, 200);
+            
+            setTimeout(() => clearInterval(hideGoogleElements), 5000);
+        });
     </script>
+    
     <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     
     <style>
-        .btn-translate {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* Theme Variables */
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --border-color: #404040;
+        }
+        
+        /* Apply theme to all elements */
+        body {
+            background-color: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+            transition: all 0.3s ease;
+        }
+        
+        /* Force text colors */
+        h1, h2, h3, h4, h5, h6, p, span, div, label, small, li, strong, b {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Cards and containers */
+        .card, .feature-card, .note-card, .news-card, .habit-card, .calendar-card, .progress-card, .year-card {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .card-title, .card-header, .habit-header h3, .notes-header h3, .news-container h4 {
+            color: var(--text-primary) !important;
+        }
+        
+        .card-text, .note-content, .news-desc, .habit-info {
+            color: var(--text-secondary) !important;
+        }
+        
+        /* Forms */
+        .form-control, .form-select, .filter-card {
+            background-color: var(--bg-primary) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .form-control::placeholder, .form-select::placeholder {
+            color: var(--text-secondary) !important;
+        }
+        
+        .form-label {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Back Button - White Text */
+        .btn-back {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
             color: white !important;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 18px;
-            font-size: 0.9rem;
-            font-weight: 500;
+            border: none !important;
         }
-        .btn-translate:hover {
-            background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+        
+        .btn-back:hover {
+            color: white !important;
+            background: linear-gradient(135deg, #5a6268 0%, #343a40 100%) !important;
+        }
+        
+        /* Tables */
+        .table {
+            color: var(--text-primary) !important;
+        }
+        
+        .table th {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        .table td {
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        /* Dashboard Components */
+        .dashboard-header, .feature-card .card-header {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .dashboard-header h2, .feature-card .card-header h4 {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Habit Tracker - Fix all text */
+        .habit-container {
+            background-color: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .habit-header, .habit-header h3, .habit-header p {
+            color: var(--text-primary) !important;
+        }
+        
+        .habit-name, .habit-info, .stat-item, .summary-value, .summary-label {
+            color: var(--text-primary) !important;
+        }
+        
+        .view-tabs .tab-btn {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        .view-tabs .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
             color: white !important;
         }
-        .lang-dropdown {
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            border: none;
-            padding: 10px 0;
-            max-height: 400px;
-            overflow-y: auto;
+        
+        .summary-card {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
         }
-        .lang-dropdown .dropdown-item {
-            padding: 10px 20px;
-            font-size: 0.9rem;
+        
+        .week-header {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
         }
-        .lang-dropdown .dropdown-item:hover {
+        
+        .day-col, .day-name, .day-date {
+            color: var(--text-primary) !important;
+        }
+        
+        .calendar-legend, .bar-label, .month-label {
+            color: var(--text-secondary) !important;
+        }
+        
+        /* Notes App */
+        .notes-container {
+            background-color: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .notes-header h3 {
+            color: var(--text-primary) !important;
+        }
+        
+        .note-title {
+            color: var(--text-primary) !important;
+        }
+        
+        .note-content {
+            color: var(--text-secondary) !important;
+        }
+        
+        /* News App */
+        .news-container {
+            background-color: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .news-title {
+            color: var(--text-primary) !important;
+        }
+        
+        .news-desc, .news-meta {
+            color: var(--text-secondary) !important;
+        }
+        
+        /* Currency and Time Zone Headlines */
+        .dashboard-header h2, .feature-card h5 {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: var(--bg-secondary) !important;
+            border-top-color: var(--border-color) !important;
+            color: var(--text-secondary) !important;
+        }
+        
+        /* Navbar */
+        [data-theme="light"] .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+        
+        [data-theme="dark"] .navbar {
+            background-color: var(--bg-secondary) !important;
+            border-bottom-color: var(--border-color) !important;
+        }
+        
+        [data-theme="light"] .navbar-brand, [data-theme="light"] .nav-link {
+            color: white !important;
+        }
+        
+        [data-theme="dark"] .navbar-brand, [data-theme="dark"] .nav-link {
+            color: var(--text-primary) !important;
+        }
+        
+        /* Dropdown */
+        .dropdown-menu {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        .dropdown-item {
+            color: var(--text-primary) !important;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        /* Alerts */
+        .alert {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        /* Theme Toggle Button */
+        .btn-theme-toggle {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
-        /* Hide Google Translate bar */
-        .goog-te-banner-frame, .skiptranslate { display: none !important; }
-        body { top: 0 !important; }
-        /* Don't translate language dropdown */
-        .notranslate { translate: no; }
+        
+        .btn-theme-toggle:hover {
+            background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
     </style>
     
     @await RenderSectionAsync("Scripts", required: false)

@@ -19,9 +19,9 @@
  */
 
 using System.Text.Json;
-using AuthMvcApp.Models;
+using MyApps.Models;
 
-namespace AuthMvcApp.Services
+namespace MyApps.Services
 {
     public class WeatherService : IWeatherService
     {

@@ -1,7 +1,7 @@
-@model AuthMvcApp.Models.NewsSearchModel
+@model MyApps.Models.NewsSearchModel
 @{
     ViewData["Title"] = "Latest News";
-    var articles = ViewBag.Articles as List<AuthMvcApp.Models.NewsArticle> ?? new List<AuthMvcApp.Models.NewsArticle>();
+    var articles = ViewBag.Articles as List<MyApps.Models.NewsArticle> ?? new List<MyApps.Models.NewsArticle>();
 }
 
 <div class="news-container">
@@ -22,7 +22,7 @@
                 <div class="row g-3 align-items-end">
                     <div class="col-md-2">
                         <label class="form-label">Language</label>
-                        <select asp-for="Language" class="form-select">
+                        <select asp-for="Language" class="form-select uniform-input">
                             <option value="en">🇬🇧 English</option>
                             <option value="hi">🇮🇳 Hindi</option>
                             <option value="ar">🇸🇦 Arabic</option>
@@ -37,11 +37,11 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Search Country</label>
-                        <input asp-for="Country" class="form-control" placeholder="e.g., India, USA" />
+                        <input asp-for="Country" class="form-control uniform-input" placeholder="e.g., India, USA" />
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Category</label>
-                        <select asp-for="Category" class="form-select">
+                        <select asp-for="Category" class="form-select uniform-input">
                             <option value="">All Categories</option>
                             <option value="general">📰 General</option>
                             <option value="world">🌍 World</option>
@@ -56,10 +56,10 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Search News</label>
-                        <input asp-for="SearchQuery" class="form-control" placeholder="Search keywords..." />
+                        <input asp-for="SearchQuery" class="form-control uniform-input" placeholder="Search keywords..." />
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">
+                        <button type="submit" class="btn btn-primary uniform-input w-100">
                             <i class="bi bi-search me-1"></i>Search
                         </button>
                     </div>
@@ -139,6 +139,13 @@
     }
 </div>
 
+<!-- Back Button at Bottom -->
+<div class="text-center mt-4 mb-4">
+    <a asp-action="Index" class="btn btn-back">
+        <i class="bi bi-arrow-left me-2"></i>← Back to Dashboard
+    </a>
+</div>
+
 <style>
     .news-container { padding: 20px 0; }
     
@@ -146,6 +153,11 @@
         border: none;
         border-radius: 20px;
         box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    }
+    
+    [data-theme="dark"] .filter-card {
+        background: #2d2d2d;
+        color: #ffffff;
     }
     
     .filter-icon { font-size: 2.5rem; }
@@ -156,6 +168,11 @@
         box-shadow: 0 5px 20px rgba(0,0,0,0.08);
         transition: all 0.3s ease;
         overflow: hidden;
+    }
+    
+    [data-theme="dark"] .news-card {
+        background: #2d2d2d;
+        color: #ffffff;
     }
     
     .news-card:hover {
@@ -206,6 +223,7 @@
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        color: inherit;
     }
     
     .news-desc {
@@ -214,11 +232,19 @@
         line-height: 1.5;
     }
     
+    [data-theme="dark"] .news-desc {
+        color: #cccccc;
+    }
+    
     .news-meta {
         display: flex;
         justify-content: space-between;
         font-size: 0.75rem;
         color: #888;
+    }
+    
+    [data-theme="dark"] .news-meta {
+        color: #aaaaaa;
     }
     
     .btn-primary {
@@ -235,6 +261,20 @@
     .form-select:focus, .form-control:focus {
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+    }
+    
+    /* Uniform input sizes */
+    .uniform-input {
+        height: 42px !important;
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+    
+    .uniform-input.btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
     }
 
     .btn-load-more {

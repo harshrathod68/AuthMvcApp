@@ -1,4 +1,4 @@
-@model AuthMvcApp.Models.UserDataModel
+@model MyApps.Models.UserDataModel
 @{
     ViewData["Title"] = "User Details";
 }
@@ -82,6 +82,45 @@
                 </div>
             </div>
 
+            <!-- Login History Section -->
+            <div class="login-history-card mt-4">
+                <div class="history-header">
+                    <h5>📊 Login History</h5>
+                    <span class="total-logins-badge">Total Logins: @ViewBag.TotalLogins</span>
+                </div>
+
+                @if (ViewBag.LoginHistory != null && ((IEnumerable<dynamic>)ViewBag.LoginHistory).Any())
+                {
+                    <div class="history-list">
+                        @foreach (var dayLog in ViewBag.LoginHistory)
+                        {
+                            <div class="history-day-card">
+                                <div class="day-header">
+                                    <span class="day-date">📅 @dayLog.Date</span>
+                                    <span class="day-count-badge">@dayLog.Count login(s)</span>
+                                </div>
+                                <div class="day-logs">
+                                    @foreach (var log in dayLog.Logs)
+                                    {
+                                        <div class="log-entry">
+                                            <span class="log-time">🕐 @log.AccessTime.ToString("hh:mm tt")</span>
+                                            <span class="log-name">@log.UserName</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="no-history">
+                        <div class="no-history-icon">📭</div>
+                        <p>No login history found for this user</p>
+                    </div>
+                }
+            </div>
+
             <!-- Action Buttons -->
             <div class="d-grid gap-2 mt-4">
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-lg text-white">
@@ -112,7 +151,7 @@
     }
 
     .user-info-card {
-        background: #f8f9fa;
+        background: var(--bg-secondary);
         border-radius: 15px;
         padding: 5px;
     }
@@ -122,7 +161,7 @@
         align-items: center;
         gap: 15px;
         padding: 15px;
-        background: white;
+        background: var(--card-bg);
         margin: 5px;
         border-radius: 12px;
         transition: all 0.3s ease;
@@ -151,18 +190,133 @@
     .info-label {
         display: block;
         font-size: 0.8rem;
-        color: #888;
+        color: var(--text-secondary);
         margin-bottom: 3px;
     }
 
     .info-value {
         display: block;
         font-weight: 600;
-        color: #333;
+        color: var(--text-primary);
     }
 
     .btn-warning {
         background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
         border: none;
+    }
+
+    /* Login History Styles */
+    .login-history-card {
+        background: var(--bg-secondary);
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+    }
+
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .history-header h5 {
+        margin: 0;
+        color: var(--text-primary);
+        font-weight: 700;
+    }
+
+    .total-logins-badge {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .history-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .history-day-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 8px var(--shadow-light);
+        border: 1px solid var(--border-color);
+    }
+
+    .day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .day-date {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    .day-count-badge {
+        background: rgba(79, 172, 254, 0.2);
+        color: #4facfe;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid rgba(79, 172, 254, 0.3);
+    }
+
+    .day-logs {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .log-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: var(--bg-secondary);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .log-time {
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .log-name {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    .no-history {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+    }
+
+    .no-history-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+
+    .no-history p {
+        margin: 0;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
     }
 </style>

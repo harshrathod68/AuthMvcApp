@@ -1,0 +1,60 @@
+[
+  {
+    "Role": "Admin",
+    "AllowedApps": [
+      "Weather",
+      "Currency",
+      "TimeZone",
+      "Country",
+      "News",
+      "Notes",
+      "Habits",
+      "Translator",
+      "Emergency",
+      "TimeTrack",
+      "SkillRoadmap",
+      "PdfConverter"
+    ]
+  },
+  {
+    "Role": "Manager",
+    "AllowedApps": [
+      "Weather",
+      "Currency",
+      "TimeZone",
+      "Country",
+      "News",
+      "Notes",
+      "Habits",
+      "TimeTrack",
+      "SkillRoadmap"
+    ]
+  },
+  {
+    "Role": "User",
+    "AllowedApps": [
+      "Habits",
+      "Notes",
+      "SkillRoadmap"
+    ]
+  },
+  {
+    "Role": "Moderator",
+    "AllowedApps": [
+      "Weather",
+      "Currency",
+      "News",
+      "Notes",
+      "Habits",
+      "Translator"
+    ]
+  },
+  {
+    "Role": "Guest",
+    "AllowedApps": [
+      "Weather",
+      "Currency",
+      "TimeZone"
+    ]
+  }
+]

@@ -1,6 +1,6 @@
-using AuthMvcApp.Models;
+using MyApps.Models;
 
-namespace AuthMvcApp.Services
+namespace MyApps.Services
 {
     /// <summary>
     /// Interface for user data management service

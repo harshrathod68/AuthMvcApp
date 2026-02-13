@@ -15,10 +15,10 @@
  */
 
 using Microsoft.AspNetCore.Mvc;
-using AuthMvcApp.Models;
-using AuthMvcApp.Services;
+using MyApps.Models;
+using MyApps.Services;
 
-namespace AuthMvcApp.Controllers
+namespace MyApps.Controllers
 {
     public class AccountController : Controller
     {
@@ -28,18 +28,21 @@ namespace AuthMvcApp.Controllers
         private readonly IUserDataService _userDataService;  // Added users data
         private readonly IOtpService _otpService;            // OTP generate karna
         private readonly IEmailService _emailService;        // Email bhejne ke liye
+        private readonly IAccessLogService _accessLogService; // Access history tracking
 
         // Constructor - Jab controller banta hai tab ye services milti hain
         public AccountController(
             IJsonDataService dataService, 
             IUserDataService userDataService,
             IOtpService otpService, 
-            IEmailService emailService)
+            IEmailService emailService,
+            IAccessLogService accessLogService)
         {
             _dataService = dataService;
             _userDataService = userDataService;
             _otpService = otpService;
             _emailService = emailService;
+            _accessLogService = accessLogService;
         }
 
         // ========================================
@@ -95,6 +98,7 @@ namespace AuthMvcApp.Controllers
                     Name = model.Name,
                     Email = model.Email,
                     Password = model.Password,
+                    Role = "User", // Public registration always creates User role
                     Otp = otp,
                     OtpExpiry = DateTime.Now.AddMinutes(_otpService.GetExpiryMinutes()),
                     IsVerified = false,
@@ -107,7 +111,7 @@ namespace AuthMvcApp.Controllers
             var sent = await _emailService.SendOtpEmailAsync(model.Email, otp);
             if (!sent)
             {
-                ModelState.AddModelError("", "Failed to send OTP. Please try again.");
+                ModelState.AddModelError("", "Failed to send OTP email. Please check your email address and try again. If the problem persists, contact support.");
                 return View(model);
             }
 
@@ -227,7 +231,7 @@ namespace AuthMvcApp.Controllers
 
         // POST: /Account/Login - Login form submit
         [HttpPost]
-        public IActionResult Login(LoginModel model)
+        public async Task<IActionResult> Login(LoginModel model)
         {
             if (!ModelState.IsValid) 
                 return View(model);
@@ -257,6 +261,10 @@ namespace AuthMvcApp.Controllers
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
                 HttpContext.Session.SetString("UserName", user.Name);
                 HttpContext.Session.SetString("UserEmail", user.Email);
+                HttpContext.Session.SetString("UserRole", user.Role); // Save role in session
+                
+                // Log access history
+                await _accessLogService.LogAccessAsync(user.Id, user.Name, user.Email);
                 
                 return RedirectToAction("Index", "Dashboard");
             }
@@ -280,9 +288,13 @@ namespace AuthMvcApp.Controllers
             }
 
             // ✅ Login successful for added user
-            HttpContext.Session.SetString("UserId", addedUser.Id.ToString());
+            HttpContext.Session.SetString("UserId", "ADD-" + addedUser.Id.ToString());
             HttpContext.Session.SetString("UserName", addedUser.Name);
             HttpContext.Session.SetString("UserEmail", addedUser.Email);
+            HttpContext.Session.SetString("UserRole", addedUser.Role ?? "User"); // Save role (default to User if null)
+            
+            // Log access history
+            await _accessLogService.LogAccessAsync(addedUser.Id, addedUser.Name, addedUser.Email);
             
             return RedirectToAction("Index", "Dashboard");
         }
@@ -427,6 +439,42 @@ namespace AuthMvcApp.Controllers
             // Session clear karo - User logged out
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
+        }
+
+        // ========================================
+        // TEST EMAIL - For debugging email configuration
+        // ========================================
+        
+        // GET: /Account/TestEmail - Test email configuration
+        [HttpGet]
+        public IActionResult TestEmail()
+        {
+            return View();
+        }
+
+        // POST: /Account/TestEmail - Send test email
+        [HttpPost]
+        public async Task<IActionResult> TestEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                ViewBag.Error = "Please enter an email address.";
+                return View();
+            }
+
+            var testOtp = "123456";
+            var sent = await _emailService.SendOtpEmailAsync(email, testOtp);
+            
+            if (sent)
+            {
+                ViewBag.Success = $"✅ Test email sent successfully to {email}! Check your inbox.";
+            }
+            else
+            {
+                ViewBag.Error = "❌ Failed to send test email. Check the console logs for details.";
+            }
+            
+            return View();
         }
 
         // ========================================

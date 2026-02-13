@@ -1,4 +1,4 @@
-@model List<AuthMvcApp.Models.UserDataModel>
+@model List<MyApps.Models.UserDataModel>
 @{
     ViewData["Title"] = "User Management";
 }
@@ -40,8 +40,8 @@
             {
                 <div class="empty-state">
                     <div class="empty-icon">📭</div>
-                    <h5>No Users Found</h5>
-                    <p class="text-muted">Start by adding your first user</p>
+                    <h5>@(ViewBag.IsAdmin ? "No Users Found" : "No Profile Data")</h5>
+                    <p class="text-muted">@(ViewBag.IsAdmin ? "Start by adding your first user" : "Start by adding your profile data")</p>
                     <a asp-action="Create" class="btn btn-primary">Add User</a>
                 </div>
             }
@@ -124,7 +124,11 @@
     .user-header h2 {
         margin: 0;
         font-weight: 700;
-        color: #333;
+        color: var(--text-primary) !important;
+    }
+
+    .user-header p {
+        color: var(--text-muted) !important;
     }
 
     .btn-add-user {
@@ -143,15 +147,40 @@
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
     }
 
-    .user-list-card {
+    .btn-history {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-weight: 600;
         border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-history:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(17, 153, 142, 0.3);
+    }
+
+    .user-list-card {
+        border: 1px solid var(--border-color) !important;
         border-radius: 20px;
-        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 5px 30px var(--shadow-light);
         overflow: hidden;
+        background-color: var(--card-bg) !important;
+    }
+
+    .user-list-card .card-body {
+        background-color: var(--card-bg) !important;
     }
 
     .user-table {
         margin: 0;
+        background-color: var(--card-bg) !important;
+        color: var(--text-primary) !important;
     }
 
     .user-table thead {
@@ -159,7 +188,7 @@
     }
 
     .user-table thead th {
-        color: white;
+        color: white !important;
         font-weight: 600;
         padding: 18px 15px;
         border: none;
@@ -168,23 +197,30 @@
         letter-spacing: 0.5px;
     }
 
+    .user-table tbody {
+        background-color: var(--card-bg) !important;
+    }
+
     .user-table tbody tr {
         transition: all 0.3s ease;
+        background-color: var(--card-bg) !important;
     }
 
     .user-table tbody tr:hover {
-        background: rgba(102, 126, 234, 0.05);
+        background: rgba(102, 126, 234, 0.08) !important;
     }
 
     .user-table tbody td {
         padding: 15px;
         vertical-align: middle;
-        border-color: #f0f0f0;
+        border-color: var(--border-color) !important;
+        color: var(--text-primary) !important;
+        background-color: transparent !important;
     }
 
     .user-id {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        color: white !important;
         padding: 5px 12px;
         border-radius: 20px;
         font-weight: 600;
@@ -197,11 +233,16 @@
         gap: 12px;
     }
 
+    .user-name-cell span {
+        color: var(--text-primary) !important;
+        font-weight: 500;
+    }
+
     .user-avatar {
         width: 40px;
         height: 40px;
         background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        color: white;
+        color: white !important;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -211,12 +252,12 @@
     }
 
     .user-email {
-        color: #667eea;
+        color: #667eea !important;
         font-weight: 500;
     }
 
     .user-date {
-        color: #888;
+        color: var(--text-muted) !important;
         font-size: 0.9rem;
     }
 
@@ -273,9 +314,13 @@
 
     .table-footer {
         padding: 15px 20px;
-        background: #fafafa;
-        border-top: 1px solid #f0f0f0;
-        color: #666;
+        background: var(--bg-secondary) !important;
+        border-top: 1px solid var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .table-footer strong {
+        color: var(--text-primary) !important;
     }
 
     .empty-state {
@@ -286,11 +331,56 @@
     .empty-icon {
         font-size: 4rem;
         margin-bottom: 15px;
+        opacity: 0.5;
     }
 
     .empty-state h5 {
-        color: #333;
+        color: var(--text-primary) !important;
         margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: var(--text-muted) !important;
+    }
+
+    /* Alert Styles */
+    .alert {
+        background-color: var(--bg-secondary) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, rgba(17, 153, 142, 0.15) 0%, rgba(56, 239, 125, 0.15) 100%) !important;
+        border-left: 4px solid #11998e !important;
+        color: var(--text-primary) !important;
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, rgba(255, 65, 108, 0.15) 0%, rgba(255, 75, 43, 0.15) 100%) !important;
+        border-left: 4px solid #ff416c !important;
+        color: var(--text-primary) !important;
+    }
+
+    /* Table Responsive */
+    .table-responsive {
+        background-color: var(--card-bg) !important;
+    }
+
+    /* Force all text to be visible */
+    .user-table td,
+    .user-table th,
+    .user-table td *,
+    .user-table th * {
+        color: inherit !important;
+    }
+
+    .user-table thead th {
+        color: white !important;
+    }
+
+    .user-table tbody td {
+        color: var(--text-primary) !important;
     }
 
     @@media (max-width: 767px) {

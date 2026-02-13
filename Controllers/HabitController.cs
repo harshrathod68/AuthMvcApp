@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using AuthMvcApp.Services;
-using AuthMvcApp.Models;
+using MyApps.Services;
+using MyApps.Models;
 
-namespace AuthMvcApp.Controllers
+namespace MyApps.Controllers
 {
     public class HabitController : Controller
     {

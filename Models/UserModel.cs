@@ -1,4 +1,4 @@
-namespace AuthMvcApp.Models
+namespace MyApps.Models
 {
     public class UserModel
     {
@@ -6,6 +6,7 @@ namespace AuthMvcApp.Models
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string Role { get; set; } = "User"; // "Admin" or "User"
         public string? Otp { get; set; }
         public DateTime? OtpExpiry { get; set; }
         public bool IsVerified { get; set; } = false;

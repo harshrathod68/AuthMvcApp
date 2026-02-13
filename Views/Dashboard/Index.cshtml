@@ -1,99 +1,201 @@
 @{
     ViewData["Title"] = "Dashboard";
+    var allowedApps = ViewBag.AllowedApps as List<string> ?? new List<string>();
 }
 
 <div class="dashboard-container">
     <div class="row g-4">
         <!-- Weather Details Box -->
-        <div class="col-md-4">
-            <a asp-action="Weather" class="text-decoration-none">
-                <div class="card dashboard-box weather-box">
-                    <div class="card-body text-center">
-                        <div class="box-icon">🌤️</div>
-                        <h4 class="box-title">Weather Details</h4>
-                        <p class="box-desc">Check current weather conditions</p>
+        @if (allowedApps.Contains("Weather", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-action="Weather" class="text-decoration-none">
+                    <div class="card dashboard-box weather-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">🌤️</div>
+                            <h4 class="box-title">Weather Details</h4>
+                            <p class="box-desc">Check current weather conditions</p>
+                        </div>
                     </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+        }
 
         <!-- Currency Conversion Box -->
-        <div class="col-md-4">
-            <a asp-action="Currency" class="text-decoration-none">
-                <div class="card dashboard-box currency-box">
-                    <div class="card-body text-center">
-                        <div class="box-icon">💱</div>
-                        <h4 class="box-title">Currency Conversion</h4>
-                        <p class="box-desc">Convert between currencies</p>
+        @if (allowedApps.Contains("Currency", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-action="Currency" class="text-decoration-none">
+                    <div class="card dashboard-box currency-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">💱</div>
+                            <h4 class="box-title">Currency Conversion</h4>
+                            <p class="box-desc">Convert between currencies</p>
+                        </div>
                     </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+        }
 
         <!-- Time Conversion Box -->
-        <div class="col-md-4">
-            <a asp-action="TimeZone" class="text-decoration-none">
-                <div class="card dashboard-box time-box">
-                    <div class="card-body text-center">
-                        <div class="box-icon">🕐</div>
-                        <h4 class="box-title">Time Conversion</h4>
-                        <p class="box-desc">Convert time between zones</p>
+        @if (allowedApps.Contains("TimeZone", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-action="TimeZone" class="text-decoration-none">
+                    <div class="card dashboard-box time-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">🕐</div>
+                            <h4 class="box-title">Time Conversion</h4>
+                            <p class="box-desc">Convert time between zones</p>
+                        </div>
                     </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+        }
 
         <!-- Country Information Box -->
-        <div class="col-md-4">
-            <a asp-action="Country" class="text-decoration-none">
-                <div class="card dashboard-box country-box">
-                    <div class="card-body text-center">
-                        <div class="box-icon">🌍</div>
-                        <h4 class="box-title">Country Information</h4>
-                        <p class="box-desc">Explore country details</p>
+        @if (allowedApps.Contains("Country", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-action="Country" class="text-decoration-none">
+                    <div class="card dashboard-box country-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">🌍</div>
+                            <h4 class="box-title">Country Information</h4>
+                            <p class="box-desc">Explore country details</p>
+                        </div>
                     </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+        }
 
         <!-- News Box -->
-        <div class="col-md-4">
-            <a asp-action="News" class="text-decoration-none">
-                <div class="card dashboard-box news-box">
-                    <div class="card-body text-center">
-                        <div class="box-icon">📰</div>
-                        <h4 class="box-title">Latest News</h4>
-                        <p class="box-desc">Read trending headlines</p>
+        @if (allowedApps.Contains("News", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-action="News" class="text-decoration-none">
+                    <div class="card dashboard-box news-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">📰</div>
+                            <h4 class="box-title">Latest News</h4>
+                            <p class="box-desc">Read trending headlines</p>
+                        </div>
                     </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+        }
 
         <!-- Notes Box -->
-        <div class="col-md-4">
-            <a asp-controller="Note" asp-action="Index" class="text-decoration-none">
-                <div class="card dashboard-box notes-box">
-                    <div class="card-body text-center">
-                        <div class="box-icon">📝</div>
-                        <h4 class="box-title">My Notes</h4>
-                        <p class="box-desc">Save & organize your notes</p>
+        @if (allowedApps.Contains("Notes", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-controller="Note" asp-action="Index" class="text-decoration-none">
+                    <div class="card dashboard-box notes-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">📝</div>
+                            <h4 class="box-title">My Notes</h4>
+                            <p class="box-desc">Save & organize your notes</p>
+                        </div>
                     </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+        }
+
+        <!-- Time Track Box -->
+        @if (allowedApps.Contains("TimeTrack", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-action="TimeTrack" class="text-decoration-none">
+                    <div class="card dashboard-box timetrack-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">⏱️</div>
+                            <h4 class="box-title">Time Track</h4>
+                            <p class="box-desc">Track your time & productivity</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
 
         <!-- Habit Tracker Box -->
-        <div class="col-md-4">
-            <a asp-controller="Habit" asp-action="Index" class="text-decoration-none">
-                <div class="card dashboard-box habit-box">
-                    <div class="card-body text-center">
-                        <div class="box-icon">🎯</div>
-                        <h4 class="box-title">Habit Tracker</h4>
-                        <p class="box-desc">Build better habits daily</p>
+        @if (allowedApps.Contains("Habits", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-controller="Habit" asp-action="Index" class="text-decoration-none">
+                    <div class="card dashboard-box habit-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">🎯</div>
+                            <h4 class="box-title">Habit Tracker</h4>
+                            <p class="box-desc">Build better habits daily</p>
+                        </div>
                     </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+        }
+
+        <!-- Language Translator Box -->
+        @if (allowedApps.Contains("Translator", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-action="Translator" class="text-decoration-none">
+                    <div class="card dashboard-box translator-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">🌐</div>
+                            <h4 class="box-title">Language Translator</h4>
+                            <p class="box-desc">Translate text instantly</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        <!-- Emergency Numbers Box -->
+        @if (allowedApps.Contains("Emergency", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-action="Emergency" class="text-decoration-none">
+                    <div class="card dashboard-box emergency-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">🚨</div>
+                            <h4 class="box-title">Emergency Numbers</h4>
+                            <p class="box-desc">Find emergency contacts</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        <!-- Skill Roadmap Box -->
+        @if (allowedApps.Contains("SkillRoadmap", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-controller="SkillRoadmap" asp-action="Index" class="text-decoration-none">
+                    <div class="card dashboard-box roadmap-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">🎯</div>
+                            <h4 class="box-title">Skill Roadmap</h4>
+                            <p class="box-desc">Plan your learning journey</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        <!-- PDF Converter Box -->
+        @if (allowedApps.Contains("PdfConverter", StringComparer.OrdinalIgnoreCase))
+        {
+            <div class="col-md-4">
+                <a asp-controller="PdfConverter" asp-action="Index" class="text-decoration-none">
+                    <div class="card dashboard-box pdf-box">
+                        <div class="card-body text-center">
+                            <div class="box-icon">📄</div>
+                            <h4 class="box-title">PDF Converter</h4>
+                            <p class="box-desc">Convert content to PDF</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
     </div>
 </div>
 
@@ -142,11 +244,41 @@
 
     .notes-box {
         background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-        color: #333;
+        color: white;
+    }
+
+    .timetrack-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
     }
 
     .habit-box {
         background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+        color: white;
+    }
+
+    .translator-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .emergency-box {
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        color: white;
+    }
+
+    .roadmap-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .pdf-box {
+        background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+        color: white;
+    }
+
+    .holidays-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
     }
 
@@ -169,6 +301,7 @@
 
     .dashboard-box .card-body {
         padding: 30px 20px;
+        color: white !important;
     }
 
     @@media (max-width: 767px) {
